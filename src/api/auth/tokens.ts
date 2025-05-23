@@ -1,37 +1,43 @@
 export async function checkAccessToken() {
-	const res = await fetch(
-		`${process.env.NEXT_PUBLIC_API_URL}/auth/checkAccess`,
-		{
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			credentials: 'include'
-		}
-	)
+	try {
+		const res = await fetch(
+			`${process.env.NEXT_PUBLIC_API_URL}/auth/checkAccess`,
+			{
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				credentials: 'include'
+			}
+		)
 
-	if (res.status === 200) {
-		return true
-	} else {
+		return res.status === 200
+	} catch (err) {
+		console.error('checkAccessToken error:', err)
 		return false
 	}
 }
 
 export async function checkRefreshToken() {
-	const res = await fetch(
-		`${process.env.NEXT_PUBLIC_API_URL}/auth/checkRefresh`,
-		{
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			credentials: 'include'
-		}
-	)
+	try {
+		const res = await fetch(
+			`${process.env.NEXT_PUBLIC_API_URL}/auth/checkRefresh`,
+			{
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				credentials: 'include'
+			}
+		)
 
-	if (res.status === 200) {
-		return res.json()
-	} else {
+		if (res.status === 200) {
+			return res.json()
+		} else {
+			return false
+		}
+	} catch (err) {
+		console.error('checkRefreshToken error:', err)
 		return false
 	}
 }
