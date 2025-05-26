@@ -1,47 +1,32 @@
+import { GetUserData } from '@/api/chat/getUserData'
 import clsx from 'clsx'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 export default function ChatElement(props: { uin: string }) {
-	const data = [
-		{
-			uin: props.uin,
-			name: 'Test',
-			photo_url: 'd',
-			received_messages: [
-				{
-					id: '1',
-					sended_by_id: 'de8424db-b929-4451-96a1-b1e2f952c834',
-					content: 'Hello, world!',
-					created_at: new Date().toISOString(),
-					updated_at: new Date().toISOString()
-				}
-			]
-		},
-		{
-			uin: 'UIN-SKDKSCJ433',
-			name: 'MAAAAKSIMKA',
-			photo_url: 'd',
-			received_messages: [
-				{
-					id: '3',
-					sended_by_id: 'de8424db-b929-4451-96a1-b1e2f952c834',
-					content: 'Hello, my!',
-					created_at: new Date().toISOString(),
-					updated_at: new Date().toISOString()
-				}
-			]
-		}
-	]
+	const [data, setData] = useState<ChatUser | null>(null)
 
-	return data.map(item => (
+	useEffect(() => {
+		const fetchData = async () => {
+			const data = await GetUserData(props.uin)
+			setData(await data)
+		}
+		fetchData()
+	}, [props.uin, setData])
+
+	return (
 		<Link
-			href={`/chat/${item.uin}`}
-			key={item.uin}
+			href={`/chat/${props.uin}`}
 			className="flex flex-row items-center justify-start space-x-4 p-2 hover:bg-[#f248223e]"
 		>
 			<div className="flex flex-row">
-				<Image alt="User profile photo" src={'/d.png'} width={50} height={50} />
+				<Image
+					alt="User profile photo"
+					src={`/${data?.photo_url === 'd' ? 'd.png' : `${data?.photo_url.split('/')[1]}`}`}
+					width={50}
+					height={50}
+				/>
 				<div
 					className={clsx('right-0 bottom-0 mt-auto h-3 w-3 rounded-2xl', {
 						'bg-[#F24822]': true,
@@ -51,16 +36,16 @@ export default function ChatElement(props: { uin: string }) {
 			</div>
 			<div className="flex flex-col">
 				<h1 className="text-xl font-bold">
-					{item.name.length > 16
-						? item.name.substring(0, 16) + '...'
-						: item.name}
+					{data?.name.length > 16
+						? data?.name.substring(0, 16) + '...'
+						: data?.name}
 				</h1>
 				<p className="text-md">
-					{item.received_messages[0].content.length > 28
-						? item.received_messages[0].content.substring(0, 28) + '...'
-						: item.received_messages[0].content}
+					{data?.received_messages[0].content.length > 28
+						? data?.received_messages[0].content.substring(0, 28) + '...'
+						: data?.received_messages[0].content}
 				</p>
 			</div>
 		</Link>
-	))
+	)
 }

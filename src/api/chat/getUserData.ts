@@ -18,5 +18,10 @@ export async function GetUserData(uin: string) {
 		credentials: 'include'
 	})
 
-	return await response.json()
+	return await response.json().then(data => {
+		if (!response.ok) {
+			throw new Error(data.message || 'Failed to fetch user data')
+		}
+		return data as ChatUser
+	})
 }
