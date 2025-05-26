@@ -1,45 +1,44 @@
-import { checkAccessToken, checkRefreshToken } from '@/api/auth/tokens'
 import { NextRequest, NextResponse } from 'next/server'
+import { checkAccessToken, checkRefreshToken } from './api/auth/tokens'
 
 export async function middleware(request: NextRequest) {
-	const accessToken = request.cookies.get('u')
-	const refreshToken = request.cookies.get('r')
+	const accessToken = request.cookies.get('u')?.value
+	const refreshToken = request.cookies.get('r')?.value
 
 	if (!accessToken && !refreshToken) {
-		console.log('No tokens found')
-		return NextResponse.redirect(new URL('/auth/login', request.url))
-	}
-
-	if (refreshToken) {
-		const res = await checkRefreshToken()
-		if (res?.ok) {
-			const data = await res.json()
-			if (data.accessToken && data.refreshToken) {
-				const response = NextResponse.next()
-				response.cookies.set('u', data.uin)
-				response.cookies.set('r', data.refreshToken)
-				return response
-			}
-		}
 		return NextResponse.redirect(new URL('/auth/login', request.url))
 	}
 
 	if (accessToken) {
-		const res = await checkAccessToken()
-		if (res) return NextResponse.next()
-
-		const refreshRes = await checkRefreshToken()
-		if (refreshRes?.ok) {
-			const data = await refreshRes.json()
-			if (data.accessToken && data.refreshToken) {
-				const response = NextResponse.next()
-				response.cookies.set('u', data.uin)
-				response.cookies.set('r', data.refreshToken)
-				return response
-			}
+		const isAccessValid = await checkAccessToken(accessToken)
+		if (isAccessValid) {
+			// accessToken валиден — пропускаем дальше
+			return NextResponse.next()
 		}
-		return NextResponse.redirect(new URL('/auth/login', request.url))
+		// accessToken невалидный, пытаемся обновить через refreshToken
 	}
+
+	if (refreshToken) {
+		const refreshRes = await checkRefreshToken(refreshToken)
+		if (refreshRes && refreshRes.accessToken && refreshRes.refreshToken) {
+			// обновили токены — ставим куки и пропускаем дальше
+			const response = NextResponse.next()
+			response.cookies.set({
+				name: 'u',
+				value: refreshRes.accessToken,
+				path: '/'
+			})
+			response.cookies.set({
+				name: 'r',
+				value: refreshRes.refreshToken,
+				path: '/'
+			})
+			return response
+		}
+	}
+
+	// Если оба токена невалидны — редирект на логин
+	return NextResponse.redirect(new URL('/auth/login', request.url))
 }
 
 export const config = {

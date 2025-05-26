@@ -1,15 +1,20 @@
-export async function checkAccessToken() {
+if (!process.env.NEXT_PUBLIC_API_URL) {
+	throw new Error('NEXT_PUBLIC_API_URL environment variable is not defined')
+}
+
+const baseUrl = process.env.NEXT_PUBLIC_API_URL.endsWith('/')
+	? process.env.NEXT_PUBLIC_API_URL.slice(0, -1)
+	: process.env.NEXT_PUBLIC_API_URL
+
+export async function checkAccessToken(token: string) {
 	try {
-		const res = await fetch(
-			`${process.env.NEXT_PUBLIC_API_URL}/auth/checkAccess`,
-			{
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				credentials: 'include'
-			}
-		)
+		const res = await fetch(`${baseUrl}/auth/check-access?token=${token}`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			credentials: 'include'
+		})
 
 		return res.status === 200
 	} catch (err) {
@@ -18,18 +23,16 @@ export async function checkAccessToken() {
 	}
 }
 
-export async function checkRefreshToken() {
+export async function checkRefreshToken(token: string) {
 	try {
-		const res = await fetch(
-			`${process.env.NEXT_PUBLIC_API_URL}/auth/checkRefresh`,
-			{
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				credentials: 'include'
-			}
-		)
+		const res = await fetch(`${baseUrl}/auth/check-refresh/?token=${token}`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			credentials: 'include'
+		})
+		console.log(res.status)
 
 		if (res.status === 200) {
 			return res.json()

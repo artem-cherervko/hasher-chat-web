@@ -1,6 +1,11 @@
 'use client'
 
+import { login } from '@/api/auth/login'
+import { useRouter } from 'next/navigation'
+import Cookies from 'js-cookie'
+
 export default function LoginPage() {
+	const router = useRouter()
 	return (
 		<div className="flex flex-col bg-[#051A27]">
 			<h1 className="flex items-center justify-center text-2xl font-bold">
@@ -8,19 +13,36 @@ export default function LoginPage() {
 			</h1>
 			<form
 				className="flex flex-col items-center justify-center space-y-3 p-4"
-				onSubmit={e => {
+				onSubmit={async e => {
 					e.preventDefault()
-					console.log('test')
+					try {
+						const res = await login(
+							e.currentTarget.uin.value,
+							e.currentTarget.password.value
+						)
+						// console.log('Login response:', res) // Debug log
+						if (res) {
+							// console.log(res.accessToken, res.refreshToken)
+							Cookies.set('u', res.accessToken, { path: '/' })
+							Cookies.set('r', res.refreshToken, { path: '/' })
+							router.push('/chat/0')
+						} else {
+							alert('Login failed: Invalid response from server')
+						}
+					} catch (error) {
+						// console.error('Login error:', error)
+						alert('Login failed: ' + (error as Error).message)
+					}
 				}}
 			>
 				<div className="flex flex-col items-center justify-center">
-					<label htmlFor="username" className="mb-2 text-lg">
+					<label htmlFor="uin" className="mb-2 text-lg">
 						UIN:
 					</label>
 					<input
 						type="text"
-						id="username"
-						name="username"
+						id="uin"
+						name="uin"
 						placeholder="UIN-SAMKFK3123"
 						className="rounded-lg border-1 border-[#F24822] p-2 outline-0"
 						required
