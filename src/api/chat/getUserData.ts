@@ -1,4 +1,5 @@
 import Cookies from 'js-cookie'
+import { ChatUser } from './interfaces'
 
 export async function GetUserData(uin: string) {
 	if (!process.env.NEXT_PUBLIC_API_URL) {

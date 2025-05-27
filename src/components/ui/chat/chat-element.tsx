@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-export default function ChatElement(props: { uin: string }) {
+export default function ChatElement(props: { uin: string; isOnline: boolean }) {
 	const [data, setData] = useState<ChatUser | null>(null)
 
 	useEffect(() => {
@@ -18,7 +18,7 @@ export default function ChatElement(props: { uin: string }) {
 	return (
 		<Link
 			href={`/chat/${props.uin}`}
-			className="flex flex-row items-center justify-start space-x-4 p-2 hover:bg-[#f248223e]"
+			className="flex flex-row items-center justify-start space-x-4 p-2 transition-all duration-200 ease-in-out hover:bg-[#f248223e] hover:text-white"
 		>
 			<div className="flex flex-row">
 				<Image
@@ -29,8 +29,8 @@ export default function ChatElement(props: { uin: string }) {
 				/>
 				<div
 					className={clsx('right-0 bottom-0 mt-auto h-3 w-3 rounded-2xl', {
-						'bg-[#F24822]': true,
-						'bg-gray-700': false
+						'bg-[#F24822]': props.isOnline === true,
+						'bg-gray-700': props.isOnline === false
 					})}
 				/>
 			</div>

@@ -5,7 +5,7 @@ export async function addUser(
 	password: string,
 	role: string = 'user'
 ) {
-	const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/add`, {
+	const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}user/add`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
@@ -14,8 +14,8 @@ export async function addUser(
 		credentials: 'include'
 	})
 
-	if (res.status === 200) {
-		return res.json()
+	if (res?.ok) {
+		return await res.json()
 	} else {
 		return false
 	}
