@@ -23,7 +23,6 @@ export default function RegisterPage() {
 					const resp = await addUser(email, name, user_name, password)
 					console.log(resp)
 					if (resp) {
-						e.currentTarget.reset()
 						router.push('/chat/0')
 					} else {
 						alert('Failed to register user. Please try again.')
@@ -44,7 +43,7 @@ export default function RegisterPage() {
 				<div className="flex flex-col items-center justify-center">
 					<label htmlFor="email">Email:</label>
 					<input
-						type="text"
+						type="email"
 						id="email"
 						name="email"
 						placeholder="example@gmail.com"

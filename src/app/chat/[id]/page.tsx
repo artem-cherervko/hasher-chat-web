@@ -4,21 +4,36 @@ import ChatFooter from '@/components/ui/chat/footer'
 import ChatHeader from '@/components/ui/chat/header'
 import Message from '@/components/ui/chat/message'
 import SideBar from '@/components/ui/chat/side-bar'
+import { useSidebar } from '@/lib/SidebarContext'
+import clsx from 'clsx'
 import { useParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 export default function ChatPage() {
+	const bottomRef = useRef<HTMLDivElement | null>(null)
 	const params = useParams()
+	const { shoving } = useSidebar()
 	useEffect(() => {
 		async function getMessages() {
-			// console.log(params['id'])
 			await AllMessages(String(params['id']))
 		}
 		getMessages()
 	}, [params])
 
+	useEffect(() => {
+		bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+	}, [])
+
 	return (
-		<div className="grid h-screen w-full grid-cols-1 items-center justify-center bg-[#051A27] lg:grid-cols-[20rem_1fr]">
+		<div
+			className={clsx(
+				'grid h-screen w-full items-center justify-center bg-[#051A27]',
+				{
+					'grid-cols-1': !shoving,
+					'lg:grid-cols-[20rem_1fr]': shoving
+				}
+			)}
+		>
 			<SideBar />
 			<div className="chat flex h-screen w-full flex-col font-[family-name:var(--font-fira-mono)]">
 				<ChatHeader />
@@ -149,6 +164,7 @@ export default function ChatPage() {
 						time="27.05.25 21:36:15"
 						from="me"
 					/>
+					<div ref={bottomRef} />
 				</div>
 				<ChatFooter />
 			</div>

@@ -6,6 +6,7 @@ import {
 	getSocket,
 	onMessage
 } from '@/api/chat/ws'
+import { SidebarProvider } from '@/lib/SidebarContext'
 import { useEffect } from 'react'
 
 export default function ChatLayout({
@@ -18,7 +19,6 @@ export default function ChatLayout({
 			try {
 				await connectWebSocket()
 
-				// ✅ Один раз підписуємось
 				onMessage(message => {
 					console.log('Received message:', message)
 				})
@@ -30,7 +30,7 @@ export default function ChatLayout({
 		connectWS()
 
 		return () => {
-			console.log('🔌 Unmounting socket effect')
+			// console.log('🔌 Unmounting socket effect')
 
 			if (getSocket()?.connected) {
 				disconnectSocket()
@@ -40,7 +40,7 @@ export default function ChatLayout({
 
 	return (
 		<div className="flex h-full w-full flex-col items-center justify-center antialiased">
-			{children}
+			<SidebarProvider>{children}</SidebarProvider>
 		</div>
 	)
 }

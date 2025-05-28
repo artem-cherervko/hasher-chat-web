@@ -7,7 +7,7 @@ export default function ChatFooter() {
 				type="text"
 				placeholder="Type..."
 				id=""
-				className="placeholder:text-md h-full w-full p-2 outline-0 placeholder:font-semibold"
+				className="placeholder:text-md h-full w-full overflow-y-auto p-2 break-words whitespace-pre-wrap outline-0 placeholder:font-semibold"
 			/>
 			<button>
 				<Send className="text-[#F24822]" />

@@ -2,13 +2,16 @@
 
 import { Settings } from 'lucide-react'
 import ChatElement from './chat-element'
-import Link from 'next/link'
 import { Suspense, useEffect, useState } from 'react'
 import { getChats } from '@/api/chat/getChats'
 import { Logout } from '@/api/auth/logout'
 import { Chat } from '@/api/chat/interfaces'
+import clsx from 'clsx'
+import { useSidebar } from '@/lib/SidebarContext'
 
 export default function SideBar() {
+	const { shoving, toggleShoving } = useSidebar()
+
 	const [data, setData] = useState<Chat>({
 		id: '',
 		chat_user_one_id: '',
@@ -49,12 +52,23 @@ export default function SideBar() {
 	const name = 'Chats'
 
 	return (
-		<div className="hidden h-screen w-[20rem] max-w-[20rem] min-w-[20rem] flex-col border-r-2 border-[#F24822] bg-[#052028] font-[family-name:var(--font-inria-serif)] lg:flex">
+		<div
+			className={clsx(
+				'h-screen w-[20rem] max-w-[20rem] min-w-[20rem] flex-col border-r-2 border-[#F24822] bg-[#052028] font-[family-name:var(--font-inria-serif)]',
+				{
+					hidden: !shoving,
+					'lg:flex': shoving
+				}
+			)}
+		>
 			<div className="nav-elements flex flex-row items-center justify-between border-b-2 border-[#F24822] p-2">
 				<div className="logo">
-					<Link href={'/chat/0'} className={'ml-1 text-4xl text-[#F24822]'}>
+					<p
+						className={'ml-1 text-4xl text-[#F24822] hover:cursor-pointer'}
+						onClick={() => toggleShoving()}
+					>
 						h
-					</Link>
+					</p>
 					<hr className="w-10 origin-right rotate-90" />
 				</div>
 				<h2 className="text-xl font-bold">

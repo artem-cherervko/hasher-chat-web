@@ -2,11 +2,11 @@ import { getUIN } from './getChats'
 import Cookies from 'js-cookie'
 
 export async function AllMessages(uin: string) {
-	// const uin = await getUIN()
+	const myUIN = await getUIN()
 	const token = Cookies.get('u') || ' '
 
 	const res = await fetch(
-		`${process.env.NEXT_PUBLIC_API_URL}chats/getAllMessages?uin=${uin}`,
+		`${process.env.NEXT_PUBLIC_API_URL}chats/getAllMessages?uin=${uin}&sender=${myUIN}`,
 		{
 			method: 'GET',
 			headers: {

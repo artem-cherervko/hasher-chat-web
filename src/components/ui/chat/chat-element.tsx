@@ -41,9 +41,32 @@ export default function ChatElement(props: { uin: string; isOnline: boolean }) {
 						: data?.name}
 				</h1>
 				<p className="text-md">
-					{data?.received_messages[0].content.length > 28
-						? data?.received_messages[0].content.substring(0, 28) + '...'
-						: data?.received_messages[0].content}
+					{(() => {
+						// достаём последний полученный и последний отправленный
+						const lastReceived = data?.received_messages?.at(-1)
+						const lastSent = data?.sended_messages?.at(-1)
+
+						// собираем во временный массив только те, что есть
+						const candidates = [lastReceived, lastSent].filter(Boolean) as {
+							content: string
+							created_at: string
+						}[]
+
+						if (candidates.length === 0) return 'Нет сообщений'
+
+						// сортируем по дате (новейшее первым)
+						candidates.sort(
+							(a, b) =>
+								new Date(b.created_at).getTime() -
+								new Date(a.created_at).getTime()
+						)
+
+						// берём самый первый (новейший)
+						const message = candidates[0].content
+						return message.length > 28
+							? message.substring(0, 28) + '...'
+							: message
+					})()}
 				</p>
 			</div>
 		</Link>
