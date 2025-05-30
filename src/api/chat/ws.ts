@@ -1,47 +1,47 @@
 import { io, Socket } from 'socket.io-client'
-import { ReceivedMessage, SendMessage } from './interfaces'
+import { SendMessage } from './interfaces'
 import { getUIN } from './getChats'
 
 let socket: Socket | null = null
 let uin: string
 
-export async function connectWebSocket() {
+export async function connectWebSocket(onMessage?: (data: any) => void) {
+	if (socket?.connected) return
+
 	uin = await getUIN()
 
-	socket = io(`${process.env.NEXT_PUBLIC_WS_URL}`, {
+	socket = io(`${process.env.NEXT_PUBLIC_WS_URL}/`, {
 		transports: ['websocket'],
-		query: {
-			uin: uin
-		},
+		query: { uin },
 		withCredentials: true
+	})
+
+	socket.on('connect', () => {
+		console.log('WebSocket connected:', socket?.id)
+	})
+
+	socket.on('message', data => {
+		if (onMessage) onMessage(data)
+	})
+
+	socket.on('disconnect', () => {
+		console.log('WebSocket disconnected')
 	})
 }
 
-export function getSocket(): Socket | null {
-	return socket
-}
-
 export function disconnectSocket() {
-	if (socket?.connected) {
+	if (socket) {
+		socket.off('message')
 		socket.disconnect()
 		socket = null
-	} else {
-		console.warn('WebSocket already disconnected or not initialized.')
 	}
-}
-
-export function onMessage(callback: (message: ReceivedMessage) => void) {
-	if (!socket) {
-		throw new Error('WebSocket is not connected. Please connect first.')
-	}
-	socket.on('message', callback)
 }
 
 export function sendMessage(message: SendMessage) {
 	if (!socket) {
 		throw new Error('WebSocket is not connected. Please connect first.')
 	}
-	socket.emit('message', message)
+	socket.emit('chat', message)
 }
 
 // {

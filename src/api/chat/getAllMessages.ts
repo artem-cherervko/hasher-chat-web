@@ -16,5 +16,10 @@ export async function AllMessages(uin: string) {
 		}
 	)
 
-	console.log(await res.json())
+	if (res.ok) {
+		const data = await res.json()
+		return data
+	} else {
+		return null
+	}
 }

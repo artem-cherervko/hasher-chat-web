@@ -5,12 +5,12 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 export default function ChatElement(props: { uin: string; isOnline: boolean }) {
-	const [data, setData] = useState<ChatUser | null>(null)
+	const [data, setData] = useState<any | null>(null)
 
 	useEffect(() => {
 		const fetchData = async () => {
 			const data = await GetUserData(props.uin)
-			setData(await data)
+			setData(data)
 		}
 		fetchData()
 	}, [props.uin, setData])
@@ -42,7 +42,6 @@ export default function ChatElement(props: { uin: string; isOnline: boolean }) {
 				</h1>
 				<p className="text-md">
 					{(() => {
-						// достаём последний полученный и последний отправленный
 						const lastReceived = data?.received_messages?.at(-1)
 						const lastSent = data?.sended_messages?.at(-1)
 

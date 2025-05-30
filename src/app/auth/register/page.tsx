@@ -21,7 +21,6 @@ export default function RegisterPage() {
 					const password = formData.get('password') as string
 
 					const resp = await addUser(email, name, user_name, password)
-					console.log(resp)
 					if (resp) {
 						router.push('/chat/0')
 					} else {
