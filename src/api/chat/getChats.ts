@@ -20,7 +20,7 @@ export async function getUIN() {
 			}
 		)
 		if (!resp.ok) {
-			throw new Error('Failed to fetch UIN from server')
+			return false
 		} else {
 			const data = await resp.text()
 			uin = data
@@ -44,7 +44,7 @@ export async function getChats() {
 		}
 	)
 	if (!resp.ok) {
-		throw new Error('Failed to fetch chats from server')
+		return false
 	} else {
 		return (await resp.json()) as Chat
 	}

@@ -26,7 +26,7 @@ export default function ChatPage() {
 		async function initAndListen() {
 			const currentUin = await getUIN()
 			if (!isMounted) return
-			setUin(currentUin)
+			setUin(String(currentUin))
 
 			await connectWebSocket(data => {
 				if (!isMounted) return

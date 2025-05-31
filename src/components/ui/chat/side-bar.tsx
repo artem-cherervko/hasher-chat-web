@@ -38,7 +38,7 @@ export default function SideBar() {
 			if (res) {
 				setData(res)
 			} else {
-				console.error('Failed to fetch chats')
+				window.location.reload()
 			}
 		}
 		fetchChats()
