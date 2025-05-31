@@ -1,12 +1,13 @@
 'use client'
 
 import { addUser } from '@/api/auth/register'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 export default function RegisterPage() {
 	const router = useRouter()
 	return (
-		<div className="flex flex-col bg-[#051A27]">
+		<div className="drop-shadow-accent flex flex-col items-center justify-center rounded-lg border-1 border-b-cyan-950 bg-[#051A27] p-4 drop-shadow-xl">
 			<h1 className="flex items-center justify-center text-2xl font-bold">
 				Register
 			</h1>
@@ -74,6 +75,12 @@ export default function RegisterPage() {
 				</div>
 				<button type="submit">Register</button>
 			</form>
+			<Link
+				href="/auth/login"
+				className="text-sm text-gray-400 hover:text-gray-300"
+			>
+				Login
+			</Link>
 		</div>
 	)
 }
