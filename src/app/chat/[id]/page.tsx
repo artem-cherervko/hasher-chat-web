@@ -11,6 +11,7 @@ import { ChatMessages } from '@/types/chat'
 import clsx from 'clsx'
 import { useParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
+import { DeleteMessage, EditMessage } from '@/api/chat/Message'
 
 export default function ChatPage() {
 	const [messages, setMessages] = useState<ChatMessages[]>([])
@@ -32,7 +33,7 @@ export default function ChatPage() {
 				setMessages(prev => {
 					return prev.map(chat => {
 						const fixedData = {
-							id: data.id || `${data.sender}-${data.time}`,
+							id: data.message_id,
 							content: data.message,
 							created_at: data.time,
 							updated_at: data.time,
@@ -51,18 +52,24 @@ export default function ChatPage() {
 						}
 					})
 				})
-				bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+				setTimeout(() => {
+					bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+				}, 0)
 			})
 
 			const data = await AllMessages(String(params['id']))
 			if (data && isMounted) {
 				setMessages(data)
-				bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+				setTimeout(() => {
+					bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+				}, 0)
 			}
 		}
 
 		initAndListen()
-		bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+		setTimeout(() => {
+			bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+		}, 0)
 
 		return () => {
 			isMounted = false
@@ -70,43 +77,83 @@ export default function ChatPage() {
 		}
 	}, [params])
 
+	async function reloadMessages() {
+		const data = await AllMessages(String(params['id']))
+		if (data) {
+			setMessages(data)
+			setTimeout(() => {
+				bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+			}, 0)
+		}
+	}
+
+	async function handleDeleteMessage(messageId: string) {
+		try {
+			await DeleteMessage(messageId)
+			await reloadMessages()
+		} catch (err) {
+			console.error(err)
+		}
+	}
+
+	async function handleEditMessage(messageId: string, newMessage: string) {
+		try {
+			await EditMessage(messageId, newMessage)
+			await reloadMessages()
+		} catch (err) {
+			console.error(err)
+		}
+	}
+
 	return (
 		<div
 			className={clsx(
 				'grid h-screen w-full items-center justify-center bg-[#051A27]',
 				{
 					'grid-cols-1': !shoving,
-					'lg:grid-cols-[20rem_1fr]': shoving
+					'md:grid-cols-1 lg:grid-cols-[20rem_1fr]': shoving
 				}
 			)}
 		>
-			<SideBar />
-			<div className="chat flex h-screen w-full flex-col font-[family-name:var(--font-fira-mono)]">
-				<ChatHeader />
+			<div className="m-auto">
+				<SideBar />
+			</div>
+			<div
+				className={clsx(
+					'chat flex h-screen w-full flex-col font-[family-name:var(--font-fira-mono)]'
+				)}
+			>
+				<div className="mt-auto">
+					<ChatHeader />
+				</div>
 				<div className="messages flex-1 space-y-3 overflow-y-auto p-2">
-					{messages.length > 0 ? (
-						<>
-							{messages[0].messages
-								.sort(
-									(a, b) =>
-										new Date(a.created_at).getTime() -
-										new Date(b.created_at).getTime()
-								)
-								.map((message, index) => (
-									<Message
-										key={message.id}
-										text={message.content}
-										time={message.created_at}
-										from={message.sender === uin ? 'me' : 'other'}
-									/>
-								))}
-						</>
-					) : (
-						<div className="flex h-full w-full items-center justify-center">
-							<p className="text-white">No messages yet</p>
-						</div>
-					)}
-					{params.id === '0' && (
+					{messages.length > 0 && messages[0]?.messages?.length > 0 ? (
+						[...messages[0].messages]
+							.sort(
+								(a, b) =>
+									new Date(a.created_at).getTime() -
+									new Date(b.created_at).getTime()
+							)
+							.map(message => (
+								<Message
+									key={message.id}
+									text={message.content}
+									time={message.created_at}
+									from={message.sender === uin ? 'me' : 'other'}
+									onDelete={() => handleDeleteMessage(message.id)}
+									onEdit={() => {
+										const newText = prompt(
+											'Введите новое сообщение',
+											message.content
+										)
+										if (newText && newText.trim() !== '') {
+											console.log(message.id)
+											handleEditMessage(message.id, newText.trim())
+										}
+									}}
+								/>
+							))
+					) : params.id === '0' ? (
 						<>
 							<Message
 								text="Hey! How was your summer vacation?"
@@ -239,7 +286,12 @@ export default function ChatPage() {
 								from="me"
 							/>
 						</>
+					) : (
+						<div className="flex h-full w-full items-center justify-center">
+							<p className="text-white">No messages yet</p>
+						</div>
 					)}
+
 					<div ref={bottomRef} className="h-1" />
 				</div>
 				<div className="mt-auto">
