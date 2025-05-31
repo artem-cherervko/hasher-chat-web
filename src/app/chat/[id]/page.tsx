@@ -108,16 +108,14 @@ export default function ChatPage() {
 	return (
 		<div
 			className={clsx(
-				'grid h-screen w-full items-center justify-center bg-[#051A27]',
+				'grid h-full w-full items-center justify-center bg-[#051A27]',
 				{
 					'grid-cols-1': !shoving,
 					'md:grid-cols-1 lg:grid-cols-[20rem_1fr]': shoving
 				}
 			)}
 		>
-			<div className="m-auto">
-				<SideBar />
-			</div>
+			<SideBar />
 			<div
 				className={clsx(
 					'chat flex h-screen w-full flex-col font-[family-name:var(--font-fira-mono)]'
