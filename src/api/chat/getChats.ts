@@ -20,7 +20,7 @@ export async function getUIN() {
 			}
 		)
 		if (!resp.ok) {
-			return false
+			return 'false'
 		} else {
 			const data = await resp.text()
 			uin = data
