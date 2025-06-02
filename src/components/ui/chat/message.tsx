@@ -20,7 +20,7 @@ export default function Message(props: {
 		<div
 			className={clsx('flex w-full', { 'justify-end': props.from === 'me' })}
 		>
-			<div className="relative inline-block h-fit max-w-[70%]">
+			<div className="relative inline-block h-fit max-w-[80%]">
 				<div
 					onTouchStart={e => {
 						const timer = setTimeout(() => {
@@ -44,7 +44,7 @@ export default function Message(props: {
 				>
 					<p
 						className={
-							'overflow-wrap break-word font-semibold break-words whitespace-pre-wrap md:text-sm lg:text-lg'
+							'overflow-wrap break-word font-semibold break-words whitespace-pre-wrap md:text-sm md:font-medium lg:text-lg'
 						}
 					>
 						{props.text}

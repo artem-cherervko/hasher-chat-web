@@ -108,7 +108,7 @@ export default function ChatPage() {
 	return (
 		<div
 			className={clsx(
-				'grid h-full w-full items-center justify-center bg-[#051A27]',
+				'grid h-screen w-full items-center justify-center bg-[#051A27]',
 				{
 					'grid-cols-1': !shoving,
 					'md:grid-cols-1 lg:grid-cols-[20rem_1fr]': shoving
