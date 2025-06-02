@@ -62,8 +62,8 @@ export default function ChatElement(props: { uin: string; isOnline: boolean }) {
 
 						// берём самый первый (новейший)
 						const message = candidates[0].content
-						return message.length > 28
-							? message.substring(0, 28) + '...'
+						return message.length > 25
+							? message.substring(0, 25) + '...'
 							: message
 					})()}
 				</p>
