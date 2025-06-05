@@ -23,7 +23,8 @@ export default function RegisterPage() {
 
 					const resp = await addUser(email, name, user_name, password)
 					if (resp) {
-						router.push('/chat/0')
+						alert('User registered successfully. Please login.')
+						router.replace('/auth/login')
 					} else {
 						alert('Failed to register user. Please try again.')
 					}

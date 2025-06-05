@@ -4,9 +4,17 @@ import { login } from '@/api/auth/login'
 import { useRouter } from 'next/navigation'
 import Cookies from 'js-cookie'
 import Link from 'next/link'
+import { useEffect } from 'react'
 
 export default function LoginPage() {
 	const router = useRouter()
+
+	useEffect(() => {
+		if (Cookies.get('u')) {
+			router.replace('/chat/0', { scroll: false })
+		}
+	})
+
 	return (
 		<div className="drop-shadow-accent flex flex-col items-center justify-center rounded-lg border-1 border-b-cyan-950 bg-[#051A27] p-4 drop-shadow-xl">
 			<h1 className="flex items-center justify-center text-2xl font-bold">
@@ -26,7 +34,7 @@ export default function LoginPage() {
 							// console.log(res.accessToken, res.refreshToken)
 							Cookies.set('u', res.accessToken, { path: '/' })
 							Cookies.set('r', res.refreshToken, { path: '/' })
-							router.push('/chat/0')
+							router.replace('/chat/0')
 						} else {
 							alert('Login failed: Invalid response from server')
 						}

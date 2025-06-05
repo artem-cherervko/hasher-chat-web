@@ -19,6 +19,7 @@ export default function ChatElement(props: { uin: string; isOnline: boolean }) {
 		<Link
 			href={`/chat/${props.uin}`}
 			className="flex flex-row items-center justify-start space-x-4 p-2 transition-all duration-200 ease-in-out hover:bg-[#f248223e] hover:text-white"
+			prefetch={true}
 		>
 			<div className="flex flex-row">
 				<Image
@@ -51,7 +52,7 @@ export default function ChatElement(props: { uin: string; isOnline: boolean }) {
 							created_at: string
 						}[]
 
-						if (candidates.length === 0) return 'Нет сообщений'
+						if (candidates.length === 0) return 'No messages'
 
 						// сортируем по дате (новейшее первым)
 						candidates.sort(

@@ -121,7 +121,7 @@ export default function ChatPage() {
 					'chat flex h-screen w-full flex-col font-[family-name:var(--font-fira-mono)]'
 				)}
 			>
-				<div className="mt-auto">
+				<div className="mt-auto h-[3.6875rem]">
 					<ChatHeader />
 				</div>
 				<div className="messages flex-1 space-y-3 overflow-y-auto p-2">
