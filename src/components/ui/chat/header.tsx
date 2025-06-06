@@ -10,7 +10,7 @@ import { useParams } from 'next/navigation'
 export default function ChatHeader() {
 	const { id } = useParams()
 	const uin = id as string
-	const [userName, setUserName] = useState<string | null>(null)
+	const [userName, setUserName] = useState<string>('Unknown')
 
 	useEffect(() => {
 		const fetchUserName = async () => {

@@ -20,7 +20,9 @@ export default function Message(props: {
 		<div
 			className={clsx('flex w-full', { 'justify-end': props.from === 'me' })}
 		>
-			<div className="relative inline-block h-fit max-w-[80%]">
+			<div
+				className={'relative inline-block h-fit md:max-w-[80%] lg:max-w-[60%]'}
+			>
 				<div
 					onTouchStart={e => {
 						const timer = setTimeout(() => {
