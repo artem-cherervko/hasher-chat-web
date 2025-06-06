@@ -10,10 +10,11 @@ export default function LoginPage() {
 	const router = useRouter()
 
 	useEffect(() => {
-		if (Cookies.get('u')) {
+		const token = Cookies.get('u')
+		if (token) {
 			router.replace('/chat/0', { scroll: false })
 		}
-	})
+	}, [])
 
 	return (
 		<div className="drop-shadow-accent flex flex-col items-center justify-center rounded-lg border-1 border-b-cyan-950 bg-[#051A27] p-4 drop-shadow-xl">
@@ -29,17 +30,16 @@ export default function LoginPage() {
 							e.currentTarget.uin.value,
 							e.currentTarget.password.value
 						)
-						// console.log('Login response:', res) // Debug log
 						if (res) {
-							// console.log(res.accessToken, res.refreshToken)
 							Cookies.set('u', res.accessToken, { path: '/' })
 							Cookies.set('r', res.refreshToken, { path: '/' })
-							router.replace('/chat/0')
+							setTimeout(() => {
+								router.replace('/chat/0')
+							}, 100)
 						} else {
 							alert('Login failed: Invalid response from server')
 						}
 					} catch (error) {
-						// console.error('Login error:', error)
 						alert('Login failed: ' + (error as Error).message)
 					}
 				}}
@@ -72,9 +72,7 @@ export default function LoginPage() {
 				</div>
 				<button
 					type="submit"
-					className={
-						'flex h-9 w-30 items-center justify-center rounded-lg border-1 border-orange-500 outline-0'
-					}
+					className="flex h-9 w-30 items-center justify-center rounded-lg border-1 border-orange-500 outline-0"
 				>
 					Login
 				</button>
