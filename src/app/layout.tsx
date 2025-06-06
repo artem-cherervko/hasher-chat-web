@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Fira_Mono, Inria_Serif } from 'next/font/google'
 import './globals.css'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const firaMono = Fira_Mono({
 	variable: '--font-fira-mono',
@@ -28,7 +29,10 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" className={`${firaMono.variable} ${inriaSerif.variable}`}>
-			<body className={`h-screen w-screen antialiased`}>{children}</body>
+			<body className={`h-screen w-screen antialiased`}>
+				<SpeedInsights />
+				{children}
+			</body>
 		</html>
 	)
 }
