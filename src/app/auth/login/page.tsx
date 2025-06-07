@@ -35,7 +35,7 @@ export default function LoginPage() {
 							Cookies.set('r', res.refreshToken, { path: '/' })
 							setTimeout(() => {
 								router.replace('/chat/0')
-							}, 100)
+							}, 500)
 						} else {
 							alert('Login failed: Invalid response from server')
 						}

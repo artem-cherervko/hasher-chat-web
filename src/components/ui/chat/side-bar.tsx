@@ -1,6 +1,6 @@
 'use client'
 
-import { Settings } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import ChatElement from './chat-element'
 import { Suspense, useEffect, useState } from 'react'
 import { getChats } from '@/api/chat/getChats'
@@ -74,13 +74,13 @@ export default function SideBar() {
 				<h2 className="text-xl font-bold">
 					{name.length > 16 ? name.substring(0, 13) + '...' : name}
 				</h2>
-				<Settings
+				<LogOut
 					onClick={async () => {
 						await Logout()
 						window.location.href = '/auth/login'
 					}}
 					className="h-7 w-7 text-[#F24822] transition-all duration-200 ease-in-out hover:cursor-pointer hover:text-white"
-				></Settings>
+				></LogOut>
 			</div>
 			<Suspense
 				fallback={

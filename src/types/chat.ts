@@ -5,6 +5,8 @@ export interface Message {
 	receiver: string
 	created_at: string
 	updated_at: string
+	is_read: boolean
+	is_edited: boolean
 }
 
 export interface ChatMessages {

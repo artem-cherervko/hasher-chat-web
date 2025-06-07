@@ -7,7 +7,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { MoreVertical, Pencil, Trash } from 'lucide-react'
+import { Check, MoreVertical, Pencil, Trash } from 'lucide-react'
 
 export default function Message(props: {
 	text: string
@@ -15,6 +15,8 @@ export default function Message(props: {
 	from: 'me' | 'other'
 	onEdit?: () => void
 	onDelete?: () => void
+	read?: boolean
+	edited?: boolean
 }) {
 	return (
 		<div
@@ -51,9 +53,24 @@ export default function Message(props: {
 					>
 						{props.text}
 					</p>
-					<p className="text-muted-foreground text-xs">
-						t: {props.time.split(' ')[1]}
-					</p>
+					<div className="flex items-center">
+						<p
+							className={clsx('text-xs', {
+								'text-orange-500': props.read,
+								'text-muted-foreground': !props.read,
+								'!text-muted-foreground': props.from === 'other'
+							})}
+						>
+							t: {props.time.split(' ')[1]}{' '}
+						</p>
+						<span
+							className={clsx('text-muted-foreground text-xs', {
+								hidden: !props.edited
+							})}
+						>
+							<Pencil className="ml-2 h-3 w-3" />
+						</span>
+					</div>
 				</div>
 
 				{/* Dropdown Menu */}

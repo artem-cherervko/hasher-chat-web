@@ -1,6 +1,11 @@
 'use client'
 import { AllMessages } from '@/api/chat/getAllMessages'
-import { connectWebSocket, disconnectSocket } from '@/api/chat/ws'
+import {
+	connectWebSocket,
+	disconnectSocket,
+	editMessage,
+	deleteMessage
+} from '@/api/chat/ws'
 import { getUIN } from '@/api/chat/getChats'
 import ChatFooter from '@/components/ui/chat/footer'
 import ChatHeader from '@/components/ui/chat/header'
@@ -12,6 +17,7 @@ import clsx from 'clsx'
 import { useParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { DeleteMessage, EditMessage } from '@/api/chat/Message'
+import { readAllMessages } from '@/api/chat/readAllMessages'
 
 export default function ChatPage() {
 	const [messages, setMessages] = useState<ChatMessages[]>([])
@@ -19,63 +25,6 @@ export default function ChatPage() {
 	const bottomRef = useRef<HTMLDivElement | null>(null)
 	const params = useParams()
 	const { shoving } = useSidebar()
-
-	useEffect(() => {
-		let isMounted = true
-
-		async function initAndListen() {
-			const currentUin = await getUIN()
-			if (!isMounted) return
-			setUin(String(currentUin))
-
-			await connectWebSocket(data => {
-				if (!isMounted) return
-				setMessages(prev => {
-					return prev.map(chat => {
-						const fixedData = {
-							id: data.message_id,
-							content: data.message,
-							created_at: data.time,
-							updated_at: data.time,
-							sender: data.sender,
-							receiver: data.receiver
-						}
-
-						const isAlreadyAdded = chat.messages.some(
-							m => m.id === fixedData.id
-						)
-						if (isAlreadyAdded) return chat
-
-						return {
-							...chat,
-							messages: [...chat.messages, fixedData]
-						}
-					})
-				})
-				setTimeout(() => {
-					bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-				}, 0)
-			})
-
-			const data = await AllMessages(String(params['id']))
-			if (data && isMounted) {
-				setMessages(data)
-				setTimeout(() => {
-					bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-				}, 0)
-			}
-		}
-
-		initAndListen()
-		setTimeout(() => {
-			bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-		}, 0)
-
-		return () => {
-			isMounted = false
-			disconnectSocket()
-		}
-	}, [params])
 
 	async function reloadMessages() {
 		const data = await AllMessages(String(params['id']))
@@ -90,6 +39,7 @@ export default function ChatPage() {
 	async function handleDeleteMessage(messageId: string) {
 		try {
 			await DeleteMessage(messageId)
+			await deleteMessage({ chat_with_uin: String(params.id) })
 			await reloadMessages()
 		} catch (err) {
 			console.error(err)
@@ -99,11 +49,88 @@ export default function ChatPage() {
 	async function handleEditMessage(messageId: string, newMessage: string) {
 		try {
 			await EditMessage(messageId, newMessage)
+			await editMessage({ chat_with_uin: String(params.id) })
 			await reloadMessages()
 		} catch (err) {
 			console.error(err)
 		}
 	}
+
+	useEffect(() => {
+		let isMounted = true
+
+		async function initAndListen() {
+			const currentUin = await getUIN()
+			if (!isMounted) return
+			setUin(String(currentUin))
+
+			connectWebSocket(async data => {
+				console.log(data)
+				if (!isMounted) return
+
+				if (data.type === 'delete' || data.type === 'edit') {
+					reloadMessages()
+					return
+				}
+
+				setMessages(prev => {
+					return prev.map(chat => {
+						const fixedData = {
+							id: data.message_id,
+							content: data.message,
+							created_at: data.time,
+							updated_at: data.time,
+							sender: data.sender,
+							receiver: data.receiver,
+							is_read: data.is_read,
+							is_edited: data.is_edited
+						}
+
+						const isAlreadyAdded = chat.messages.some(
+							m => m.id === fixedData.id
+						)
+						if (isAlreadyAdded) return chat
+
+						return {
+							...chat,
+							messages: [...chat.messages, fixedData]
+						}
+					})
+				})
+				setTimeout(() => {
+					reloadMessages()
+					bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+				}, 5)
+			})
+
+			const data = await AllMessages(String(params['id']))
+			if (data && isMounted) {
+				setMessages(data)
+				setTimeout(() => {
+					bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+				}, 5)
+			}
+		}
+
+		initAndListen()
+
+		readAllMessages({ chat_with: String(params['id']) })
+
+		const intervalId = setInterval(() => {
+			readAllMessages({ chat_with: String(params['id']) })
+			reloadMessages()
+		}, 3000)
+
+		setTimeout(() => {
+			bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+		}, 0)
+
+		return () => {
+			isMounted = false
+			disconnectSocket()
+			clearInterval(intervalId)
+		}
+	}, [params])
 
 	return (
 		<div
@@ -138,6 +165,8 @@ export default function ChatPage() {
 									text={message.content}
 									time={message.created_at}
 									from={message.sender === uin ? 'me' : 'other'}
+									read={message.is_read}
+									edited={message.is_edited}
 									onDelete={() => handleDeleteMessage(message.id)}
 									onEdit={() => {
 										const newText = prompt(
@@ -145,7 +174,6 @@ export default function ChatPage() {
 											message.content
 										)
 										if (newText && newText.trim() !== '') {
-											console.log(message.id)
 											handleEditMessage(message.id, newText.trim())
 										}
 									}}
@@ -282,6 +310,8 @@ export default function ChatPage() {
 								text="We kept our distance! Safety first!"
 								time="27.05.25 21:36:15"
 								from="me"
+								edited={true}
+								read={true}
 							/>
 						</>
 					) : (
