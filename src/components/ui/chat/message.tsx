@@ -7,7 +7,8 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { Check, MoreVertical, Pencil, Trash } from 'lucide-react'
+import { MoreVertical, Pencil, Trash } from 'lucide-react'
+import { useParams } from 'next/navigation'
 
 export default function Message(props: {
 	text: string
@@ -18,6 +19,7 @@ export default function Message(props: {
 	read?: boolean
 	edited?: boolean
 }) {
+	const { id } = useParams()
 	return (
 		<div
 			className={clsx('flex w-full', { 'justify-end': props.from === 'me' })}
@@ -74,7 +76,11 @@ export default function Message(props: {
 				</div>
 
 				{/* Dropdown Menu */}
-				<div className="absolute top-1 right-1">
+				<div
+					className={clsx('absolute top-1 right-1', {
+						hidden: props.from === 'other' || id === '0'
+					})}
+				>
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<button className="text-muted-foreground hover:text-white">

@@ -4,9 +4,12 @@ import { login } from '@/api/auth/login'
 import { useRouter } from 'next/navigation'
 import Cookies from 'js-cookie'
 import Link from 'next/link'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { ArrowRight, Loader2 } from 'lucide-react'
+import clsx from 'clsx'
 
 export default function LoginPage() {
+	const [isLoading, setIsLoading] = useState(false)
 	const router = useRouter()
 
 	useEffect(() => {
@@ -26,6 +29,7 @@ export default function LoginPage() {
 				onSubmit={async e => {
 					e.preventDefault()
 					try {
+						setIsLoading(true)
 						const res = await login(
 							e.currentTarget.uin.value,
 							e.currentTarget.password.value
@@ -41,6 +45,8 @@ export default function LoginPage() {
 						}
 					} catch (error) {
 						alert('Login failed: ' + (error as Error).message)
+					} finally {
+						setIsLoading(false)
 					}
 				}}
 			>
@@ -53,7 +59,12 @@ export default function LoginPage() {
 						id="uin"
 						name="uin"
 						placeholder="UIN-SAMKFK3123"
-						className="rounded-lg border-1 border-[#F24822] p-2 outline-0"
+						className={clsx(
+							'rounded-lg border-1 border-[#F24822] p-2 outline-0',
+							{
+								'pointer-events-none opacity-50': isLoading
+							}
+						)}
 						required
 					/>
 				</div>
@@ -66,15 +77,27 @@ export default function LoginPage() {
 						id="password"
 						name="password"
 						placeholder="Password..."
-						className="rounded-lg border-1 border-[#F24822] p-2 outline-0"
+						className={clsx(
+							'rounded-lg border-1 border-[#F24822] p-2 outline-0',
+							{
+								'pointer-events-none opacity-50': isLoading
+							}
+						)}
 						required
 					/>
 				</div>
 				<button
 					type="submit"
-					className="flex h-9 w-30 items-center justify-center rounded-lg border-1 border-orange-500 outline-0"
+					className="flex h-9 w-30 items-center justify-center rounded-lg !border !border-[#F24822] !text-white outline-0"
 				>
-					Login
+					{isLoading ? (
+						<Loader2 className="ml-2 animate-spin" size={16} />
+					) : (
+						<>
+							Login
+							<ArrowRight className="ml-2" size={16} />
+						</>
+					)}
 				</button>
 			</form>
 			<Link

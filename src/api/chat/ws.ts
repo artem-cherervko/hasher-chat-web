@@ -21,7 +21,7 @@ export async function connectWebSocket(
 	})
 
 	socket.on('connect', () => {
-		console.log('WebSocket connected:', socket?.id)
+		// console.log('WebSocket connected:', socket?.id)
 	})
 
 	socket.on('message', data => {
@@ -37,13 +37,15 @@ export async function connectWebSocket(
 	})
 
 	socket.on('disconnect', () => {
-		console.log('WebSocket disconnected')
+		// console.log('WebSocket disconnected')
 	})
 }
 
 export function disconnectSocket() {
 	if (socket) {
 		socket.off('message')
+		socket.off('edit')
+		socket.off('delete')
 		socket.disconnect()
 		socket = null
 	}
