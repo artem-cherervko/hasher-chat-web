@@ -3,29 +3,13 @@
 import { useSidebar } from '@/lib/SidebarContext'
 import clsx from 'clsx'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
-import { getChatUserName } from '@/api/chat/getChatUserName'
 import { useParams } from 'next/navigation'
+import { useChatHeader } from '@/hooks/useChatHeader'
 
 export default function ChatHeader() {
 	const { id } = useParams()
-	const uin = id as string
-	const [userName, setUserName] = useState<string>('Unknown')
-
-	useEffect(() => {
-		const fetchUserName = async () => {
-			const resp = await getChatUserName(uin)
-			if (resp.ok) {
-				const data = await resp.text()
-				setUserName(data)
-			} else {
-				setUserName('Unknown')
-			}
-		}
-		fetchUserName()
-	}, [uin])
-
 	const { toggleShoving, shoving } = useSidebar()
+	const { userName } = useChatHeader(id as string)
 
 	return (
 		<header className="flex h-full w-full flex-row items-center justify-between border-b-2 border-[#F24822] bg-[#052028] p-2 font-[family-name:var(--font-inria-serif)]">

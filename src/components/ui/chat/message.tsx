@@ -7,7 +7,8 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { Check, MoreVertical, Pencil, Trash } from 'lucide-react'
+import { MoreVertical, Pencil, Trash } from 'lucide-react'
+import { useParams } from 'next/navigation'
 
 export default function Message(props: {
 	text: string
@@ -18,6 +19,7 @@ export default function Message(props: {
 	read?: boolean
 	edited?: boolean
 }) {
+	const { id } = useParams()
 	return (
 		<div
 			className={clsx('flex w-full', { 'justify-end': props.from === 'me' })}
@@ -26,18 +28,18 @@ export default function Message(props: {
 				className={'relative inline-block h-fit md:max-w-[80%] lg:max-w-[60%]'}
 			>
 				<div
-					onTouchStart={e => {
-						const timer = setTimeout(() => {
-							console.log('Message long pressed:', props.text)
-						}, 2000)
+					// onTouchStart={e => {
+					// 	const timer = setTimeout(() => {
+					// 		// console.log('Message long pressed:', props.text)
+					// 	}, 2000)
 
-						const cleanup = () => {
-							clearTimeout(timer)
-							document.removeEventListener('touchend', cleanup)
-						}
+					// 	const cleanup = () => {
+					// 		clearTimeout(timer)
+					// 		document.removeEventListener('touchend', cleanup)
+					// 	}
 
-						document.addEventListener('touchend', cleanup)
-					}}
+					// 	document.addEventListener('touchend', cleanup)
+					// }}
 					className={clsx(
 						'rounded-lg border-2 p-2 pr-8 drop-shadow-sm drop-shadow-gray-800 transition-opacity active:opacity-90',
 						{
@@ -74,7 +76,11 @@ export default function Message(props: {
 				</div>
 
 				{/* Dropdown Menu */}
-				<div className="absolute top-1 right-1">
+				<div
+					className={clsx('absolute top-1 right-1', {
+						hidden: props.from === 'other' || id === '0'
+					})}
+				>
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<button className="text-muted-foreground hover:text-white">

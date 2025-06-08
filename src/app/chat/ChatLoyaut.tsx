@@ -1,13 +1,17 @@
+import SideBar from '@/components/ui/chat/side-bar'
 import { SidebarProvider } from '@/lib/SidebarContext'
 
 export default function ChatLayout({
 	children
-}: Readonly<{
+}: {
 	children: React.ReactNode
-}>) {
+}) {
 	return (
-		<div className="flex h-full w-full flex-col items-center justify-center antialiased">
-			<SidebarProvider>{children}</SidebarProvider>
-		</div>
+		<SidebarProvider>
+			<div className="flex">
+				<SideBar />
+				<div className="flex-1">{children}</div>
+			</div>
+		</SidebarProvider>
 	)
 }

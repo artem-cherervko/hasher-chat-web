@@ -1,6 +1,7 @@
 'use client'
 
 import { sendMessage } from '@/api/chat/ws'
+import clsx from 'clsx'
 import { Send } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import { KeyboardEvent } from 'react'
@@ -28,7 +29,14 @@ export default function ChatFooter() {
 	}
 
 	return (
-		<footer className="m-2 flex h-[fit-content] max-w-screen flex-row items-center justify-between rounded-lg border-2 border-[#F24822] p-2">
+		<footer
+			className={clsx(
+				'm-2 flex h-[fit-content] max-w-screen flex-row items-center justify-between rounded-lg border-2 border-[#F24822] p-2',
+				{
+					'pointer-events-none opacity-50': params.id === '0'
+				}
+			)}
+		>
 			<input
 				type="text"
 				placeholder="Type..."
@@ -36,7 +44,13 @@ export default function ChatFooter() {
 				onKeyDown={handleKeyPress}
 				className="placeholder:text-md h-full w-full overflow-y-auto p-2 break-words whitespace-pre-wrap outline-0 placeholder:font-semibold"
 			/>
-			<button type="submit" onClick={handleSendMessage}>
+			<button
+				type="submit"
+				onClick={handleSendMessage}
+				className={clsx({
+					'pointer-events-none opacity-50': params.id === '0'
+				})}
+			>
 				<Send className="text-[#F24822]" />
 			</button>
 		</footer>
