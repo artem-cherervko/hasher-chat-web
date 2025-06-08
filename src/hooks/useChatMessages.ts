@@ -9,7 +9,7 @@ import {
 import { getUIN } from '@/api/chat/getChats'
 import { DeleteMessage, EditMessage } from '@/api/chat/Message'
 import { readAllMessages } from '@/api/chat/readAllMessages'
-import { ChatMessages } from '@/types/chat'
+import { ChatMessages, Message } from '@/types/chat'
 
 export function useChatMessages(chatId: string) {
 	const [messages, setMessages] = useState<ChatMessages[]>([])
@@ -46,8 +46,22 @@ export function useChatMessages(chatId: string) {
 				}
 
 				setMessages(prev => {
-					const exists = prev.some(m => m.id === newMessage.id)
-					return exists ? prev : [...prev, newMessage]
+					if (prev.length === 0) {
+						return [
+							{
+								chat_id: chatId,
+								messages: [newMessage]
+							}
+						]
+					}
+					const exists = prev[0].messages.some(m => m.id === newMessage.id)
+					if (exists) return prev
+					return [
+						{
+							...prev[0],
+							messages: [...prev[0].messages, newMessage]
+						}
+					]
 				})
 			})
 
