@@ -35,17 +35,12 @@ export async function connectWebSocket(
 	socket.on('delete', data => {
 		if (onDelete) onDelete(data)
 	})
-
-	socket.on('disconnect', () => {
-		// console.log('WebSocket disconnected')
-	})
 }
 
 export function disconnectSocket() {
+	// console.log('disconnecting socket')
 	if (socket) {
 		socket.off('message')
-		socket.off('edit')
-		socket.off('delete')
 		socket.disconnect()
 		socket = null
 	}

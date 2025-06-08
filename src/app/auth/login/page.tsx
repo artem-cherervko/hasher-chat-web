@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { ArrowRight, Loader2 } from 'lucide-react'
 import clsx from 'clsx'
+import { toast } from 'sonner'
 
 export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false)
@@ -30,21 +31,24 @@ export default function LoginPage() {
 					e.preventDefault()
 					try {
 						setIsLoading(true)
-						const res = await login(
-							e.currentTarget.uin.value,
-							e.currentTarget.password.value
-						)
-						if (res) {
-							Cookies.set('u', res.accessToken, { path: '/' })
-							Cookies.set('r', res.refreshToken, { path: '/' })
-							setTimeout(() => {
-								router.replace('/chat/0')
-							}, 500)
-						} else {
-							alert('Login failed: Invalid response from server')
-						}
+						localStorage.setItem('uin', e.currentTarget.uin.value)
+						localStorage.setItem('password', e.currentTarget.password.value)
+						router.replace('/auth/code')
+						// const res = await login(
+						// 	e.currentTarget.uin.value,
+						// 	e.currentTarget.password.value
+						// )
+						// if (res) {
+						// 	Cookies.set('u', res.accessToken, { path: '/' })
+						// 	Cookies.set('r', res.refreshToken, { path: '/' })
+						// 	setTimeout(() => {
+						// 		router.replace('/chat/0')
+						// 	}, 500)
+						// } else {
+						// 	toast.error('Login failed: Invalid response from server')
+						// }
 					} catch (error) {
-						alert('Login failed: ' + (error as Error).message)
+						toast.error('Login failed: ' + (error as Error).message)
 					} finally {
 						setIsLoading(false)
 					}

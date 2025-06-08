@@ -28,18 +28,18 @@ export default function Message(props: {
 				className={'relative inline-block h-fit md:max-w-[80%] lg:max-w-[60%]'}
 			>
 				<div
-					onTouchStart={e => {
-						const timer = setTimeout(() => {
-							console.log('Message long pressed:', props.text)
-						}, 2000)
+					// onTouchStart={e => {
+					// 	const timer = setTimeout(() => {
+					// 		// console.log('Message long pressed:', props.text)
+					// 	}, 2000)
 
-						const cleanup = () => {
-							clearTimeout(timer)
-							document.removeEventListener('touchend', cleanup)
-						}
+					// 	const cleanup = () => {
+					// 		clearTimeout(timer)
+					// 		document.removeEventListener('touchend', cleanup)
+					// 	}
 
-						document.addEventListener('touchend', cleanup)
-					}}
+					// 	document.addEventListener('touchend', cleanup)
+					// }}
 					className={clsx(
 						'rounded-lg border-2 p-2 pr-8 drop-shadow-sm drop-shadow-gray-800 transition-opacity active:opacity-90',
 						{

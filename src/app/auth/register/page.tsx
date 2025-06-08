@@ -1,11 +1,16 @@
 'use client'
 
 import { addUser } from '@/api/auth/register'
+import clsx from 'clsx'
+import { ArrowRight, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { toast } from 'sonner'
 
 export default function RegisterPage() {
 	const router = useRouter()
+	const [isLoading, setIsLoading] = useState(false)
 	return (
 		<div className="drop-shadow-accent flex flex-col items-center justify-center rounded-lg border-1 border-b-cyan-950 bg-[#051A27] p-4 drop-shadow-xl">
 			<h1 className="flex items-center justify-center text-2xl font-bold">
@@ -15,6 +20,7 @@ export default function RegisterPage() {
 				className="flex flex-col items-center justify-center space-y-3 p-4"
 				onSubmit={async e => {
 					e.preventDefault()
+					setIsLoading(true)
 					const formData = new FormData(e.currentTarget)
 					const name = formData.get('name') as string
 					const email = formData.get('email') as string
@@ -23,11 +29,12 @@ export default function RegisterPage() {
 
 					const resp = await addUser(email, name, user_name, password)
 					if (resp) {
-						alert('User registered successfully. Please login.')
+						toast.success('User registered successfully. Please login.')
 						router.replace('/auth/login')
 					} else {
-						alert('Failed to register user. Please try again.')
+						toast.error('Failed to register user. Please try again.')
 					}
+					setIsLoading(false)
 				}}
 			>
 				<div className="flex flex-col items-center justify-center">
@@ -37,7 +44,12 @@ export default function RegisterPage() {
 						id="name"
 						name="name"
 						placeholder="Name..."
-						className="rounded-lg border-1 border-[#F24822] p-2 outline-0"
+						className={clsx(
+							'rounded-lg border-1 border-[#F24822] p-2 outline-0',
+							{
+								'pointer-events-none opacity-50': isLoading
+							}
+						)}
 						required
 					/>
 				</div>
@@ -48,7 +60,12 @@ export default function RegisterPage() {
 						id="email"
 						name="email"
 						placeholder="example@gmail.com"
-						className="rounded-lg border-1 border-[#F24822] p-2 outline-0"
+						className={clsx(
+							'rounded-lg border-1 border-[#F24822] p-2 outline-0',
+							{
+								'pointer-events-none opacity-50': isLoading
+							}
+						)}
 						required
 					/>
 				</div>
@@ -59,7 +76,12 @@ export default function RegisterPage() {
 						id="user_name"
 						name="user_name"
 						placeholder="User name..."
-						className="rounded-lg border-1 border-[#F24822] p-2 outline-0"
+						className={clsx(
+							'rounded-lg border-1 border-[#F24822] p-2 outline-0',
+							{
+								'pointer-events-none opacity-50': isLoading
+							}
+						)}
 						required
 					/>
 				</div>
@@ -70,11 +92,29 @@ export default function RegisterPage() {
 						id="password"
 						name="password"
 						placeholder="Password..."
-						className="rounded-lg border-1 border-[#F24822] p-2 outline-0"
+						className={clsx(
+							'rounded-lg border-1 border-[#F24822] p-2 outline-0',
+							{
+								'pointer-events-none opacity-50': isLoading
+							}
+						)}
 						required
 					/>
 				</div>
-				<button type="submit">Register</button>
+				<button
+					type="submit"
+					className="flex h-9 w-30 items-center justify-center rounded-lg !border !border-[#F24822] !text-white outline-0"
+					disabled={isLoading}
+				>
+					{isLoading ? (
+						<Loader2 className="ml-2 animate-spin" size={16} />
+					) : (
+						<>
+							Register
+							<ArrowRight className="ml-2" size={16} />
+						</>
+					)}
+				</button>
 			</form>
 			<Link
 				href="/auth/login"

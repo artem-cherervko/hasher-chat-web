@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Fira_Mono, Inria_Serif } from 'next/font/google'
 import './globals.css'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { Toaster } from 'sonner'
 
 const firaMono = Fira_Mono({
 	variable: '--font-fira-mono',
@@ -32,6 +33,7 @@ export default function RootLayout({
 			<body className={`h-screen w-screen antialiased`}>
 				<SpeedInsights />
 				{children}
+				<Toaster position="top-center" theme="dark" richColors />
 			</body>
 		</html>
 	)

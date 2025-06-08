@@ -16,23 +16,6 @@ export function useChatMessages(chatId: string) {
 	const [uin, setUin] = useState('')
 	const bottomRef = useRef<HTMLDivElement | null>(null)
 
-	async function reloadMessages() {
-		const data = await AllMessages(chatId)
-		if (data) setMessages(data)
-	}
-
-	async function handleDeleteMessage(messageId: string) {
-		await DeleteMessage(messageId)
-		await deleteMessage({ chat_with_uin: chatId })
-		await reloadMessages()
-	}
-
-	async function handleEditMessage(messageId: string, newMessage: string) {
-		await EditMessage(messageId, newMessage)
-		await editMessage({ chat_with_uin: chatId })
-		await reloadMessages()
-	}
-
 	useEffect(() => {
 		if (chatId === '0') return
 		let isMounted = true
@@ -51,32 +34,21 @@ export function useChatMessages(chatId: string) {
 					return
 				}
 
+				const newMessage = {
+					id: data.message_id,
+					content: data.message,
+					created_at: data.time,
+					updated_at: data.time,
+					sender: data.sender,
+					receiver: data.receiver,
+					is_read: data.is_read,
+					is_edited: data.is_edited
+				}
+
 				setMessages(prev => {
-					return prev.map(chat => {
-						const fixedData = {
-							id: data.message_id,
-							content: data.message,
-							created_at: data.time,
-							updated_at: data.time,
-							sender: data.sender,
-							receiver: data.receiver,
-							is_read: data.is_read,
-							is_edited: data.is_edited
-						}
-
-						const alreadyExists = chat.messages.some(m => m.id === fixedData.id)
-						if (alreadyExists) return chat
-
-						return {
-							...chat,
-							messages: [...chat.messages, fixedData]
-						}
-					})
+					const exists = prev.some(m => m.id === newMessage.id)
+					return exists ? prev : [...prev, newMessage]
 				})
-
-				setTimeout(() => {
-					reloadMessages()
-				}, 5)
 			})
 
 			const initialData = await AllMessages(chatId)
@@ -91,9 +63,7 @@ export function useChatMessages(chatId: string) {
 			reloadMessages()
 		}, 3000)
 
-		setTimeout(() => {
-			bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-		}, 0)
+		bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
 
 		return () => {
 			isMounted = false
@@ -101,6 +71,23 @@ export function useChatMessages(chatId: string) {
 			clearInterval(intervalId)
 		}
 	}, [chatId])
+
+	async function reloadMessages() {
+		const data = await AllMessages(chatId)
+		if (data) setMessages(data)
+	}
+
+	async function handleDeleteMessage(messageId: string) {
+		await DeleteMessage(messageId)
+		await deleteMessage({ chat_with_uin: chatId })
+		await reloadMessages()
+	}
+
+	async function handleEditMessage(messageId: string, newMessage: string) {
+		await EditMessage(messageId, newMessage)
+		await editMessage({ chat_with_uin: chatId })
+		await reloadMessages()
+	}
 
 	return {
 		messages,
