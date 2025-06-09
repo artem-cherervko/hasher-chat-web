@@ -15,12 +15,14 @@ export function useChatMessages(chatId: string) {
 	const [messages, setMessages] = useState<ChatMessages[]>([])
 	const [uin, setUin] = useState('')
 	const bottomRef = useRef<HTMLDivElement | null>(null)
+	const [isLoading, setIsLoading] = useState(true)
 
 	useEffect(() => {
 		if (chatId === '0') return
 		let isMounted = true
 
 		async function init() {
+			setIsLoading(true)
 			const currentUin = await getUIN()
 			if (!isMounted) return
 			setUin(currentUin.toString())
@@ -28,7 +30,7 @@ export function useChatMessages(chatId: string) {
 			connectWebSocket(data => {
 				if (!isMounted) return
 
-				if (data.type === 'delete' || data.type === 'edit') {
+				if (data.type === 'delete' || data.type === 'edit' || data.message) {
 					reloadMessages()
 					readAllMessages({ chat_with: chatId })
 					return
@@ -67,13 +69,14 @@ export function useChatMessages(chatId: string) {
 
 			const initialData = await AllMessages(chatId)
 			if (isMounted && initialData) setMessages(initialData)
+			setIsLoading(false)
 		}
 
 		init()
 		readAllMessages({ chat_with: chatId })
 
 		const intervalId = setInterval(() => {
-			readAllMessages({ chat_with: chatId })
+			// readAllMessages({ chat_with: chatId })
 			reloadMessages()
 		}, 3000)
 
@@ -108,6 +111,7 @@ export function useChatMessages(chatId: string) {
 		uin,
 		handleDeleteMessage,
 		handleEditMessage,
-		bottomRef
+		bottomRef,
+		isLoading
 	}
 }
