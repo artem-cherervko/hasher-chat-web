@@ -2,7 +2,7 @@
 
 import { LogOut, Search } from 'lucide-react'
 import ChatElement from './chat-element'
-import { Suspense, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { getChats } from '@/api/chat/getChats'
 import { Logout } from '@/api/auth/logout'
 import { Chat } from '@/api/chat/interfaces'

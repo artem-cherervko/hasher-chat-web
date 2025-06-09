@@ -3,14 +3,18 @@ import clsx from 'clsx'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import VerifiedBadge from '../badges/verifiedBadge'
+import DeveloperBadge from '../badges/developerBadge'
+import AdminBadge from '../badges/adminBadge'
+import PremiumBadge from '../badges/premiumBadge'
 
 export default function ChatElement(props: { uin: string; isOnline: boolean }) {
 	const [data, setData] = useState<any | null>(null)
 
 	useEffect(() => {
 		const fetchData = async () => {
-			const data = await GetUserData(props.uin)
-			setData(data)
+			const res = await GetUserData(props.uin)
+			setData(res)
 		}
 		fetchData()
 	}, [props.uin, setData])
@@ -36,11 +40,17 @@ export default function ChatElement(props: { uin: string; isOnline: boolean }) {
 				/>
 			</div>
 			<div className="flex flex-col">
-				<h1 className="text-xl font-bold">
-					{data?.name.length > 16
-						? data?.name.substring(0, 16) + '...'
-						: data?.name}
-				</h1>
+				<div className="flex flex-row items-center justify-center space-x-2">
+					<h1 className="text-xl font-bold">
+						{data?.name.length > 16
+							? data?.name.substring(0, 16) + '...'
+							: data?.name}
+					</h1>
+					{data?.role === 'dev' && <DeveloperBadge />}
+					{data?.role === 'admin' && <AdminBadge />}
+					{data?.role === 'premium' && <PremiumBadge />}
+					{data?.role === 'verified' && <VerifiedBadge />}
+				</div>
 				<p className="text-md">
 					{(() => {
 						const lastReceived = data?.received_messages?.at(-1)
