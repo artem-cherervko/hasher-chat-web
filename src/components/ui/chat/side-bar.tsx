@@ -1,6 +1,6 @@
 'use client'
 
-import { LogOut } from 'lucide-react'
+import { LogOut, Search } from 'lucide-react'
 import ChatElement from './chat-element'
 import { Suspense, useEffect, useState } from 'react'
 import { getChats } from '@/api/chat/getChats'
@@ -8,10 +8,13 @@ import { Logout } from '@/api/auth/logout'
 import { Chat } from '@/api/chat/interfaces'
 import clsx from 'clsx'
 import { useSidebar } from '@/lib/SidebarContext'
+import { Skeleton } from '../skeleton'
+import FindUserDialog from './FindUserDialog'
 
 export default function SideBar() {
+	const [isLoading, setIsLoading] = useState(true)
 	const { shoving, toggleShoving } = useSidebar()
-
+	const [open, setOpen] = useState(false)
 	const [data, setData] = useState<Chat>({
 		id: '',
 		chat_user_one_id: '',
@@ -34,12 +37,14 @@ export default function SideBar() {
 
 	useEffect(() => {
 		async function fetchChats() {
+			setIsLoading(true)
 			const res = await getChats()
 			if (res) {
 				setData(res)
 			} else {
 				window.location.reload()
 			}
+			setIsLoading(false)
 		}
 		fetchChats()
 		const interval = setInterval(() => {
@@ -54,7 +59,7 @@ export default function SideBar() {
 	return (
 		<div
 			className={clsx(
-				'h-screen w-[20rem] max-w-[20rem] min-w-[20rem] flex-col border-r-2 border-[#F24822] bg-[#052028] font-[family-name:var(--font-inria-serif)]',
+				'relative h-screen w-[20rem] max-w-[20rem] min-w-[20rem] flex-col border-r-2 border-[#F24822] bg-[#052028] font-[family-name:var(--font-inria-serif)]',
 				{
 					hidden: !shoving,
 					'lg:flex': shoving
@@ -82,28 +87,43 @@ export default function SideBar() {
 					className="h-7 w-7 text-[#F24822] transition-all duration-200 ease-in-out hover:cursor-pointer hover:text-white"
 				></LogOut>
 			</div>
-			<Suspense
-				fallback={
-					<div className="flex h-full w-full items-center justify-center text-white">
-						Loading chats...
+			<div className="flex flex-col overflow-y-auto">
+				{isLoading ? (
+					<div className="mt-2 ml-2 flex items-center space-x-4">
+						<Skeleton className="h-12 w-12 rounded-full" />
+						<div className="space-y-2">
+							<Skeleton className="h-4 w-[200px]" />
+							<Skeleton className="h-4 w-[150px]" />
+						</div>
 					</div>
-				}
-			>
-				<div className="flex flex-col overflow-y-auto">
-					{Array.isArray(data) &&
-						[
-							...new Map(
-								data.map(chat => [chat.chat_user_one.uin, chat]) // ключ — uin первого пользователя
-							).values()
-						].map(chat => (
-							<ChatElement
-								key={chat.id}
-								isOnline={chat.chat_user_one.isOnline}
-								uin={chat.chat_user_one.uin}
-							/>
-						))}
-				</div>
-			</Suspense>
+				) : (
+					<>
+						{Array.isArray(data) &&
+							[
+								...new Map(
+									data.map(chat => [chat.chat_user_one.uin, chat]) // ключ — uin первого пользователя
+								).values()
+							].map(chat => (
+								<ChatElement
+									key={chat.id}
+									isOnline={chat.chat_user_one.isOnline}
+									uin={chat.chat_user_one.uin}
+								/>
+							))}
+					</>
+				)}
+			</div>
+			<div className="bg-accent absolute right-2 bottom-2 rounded-full border-1 border-[#F24822] p-1">
+				<button
+					onClick={() => {
+						setOpen(true)
+					}}
+					className="rounded-full p-2 transition-all duration-200 ease-in-out hover:bg-[#F24822]"
+				>
+					<Search className="h-7 w-7 text-[#F24822] hover:text-white" />
+				</button>
+			</div>
+			<FindUserDialog open={open} setOpen={setOpen} />
 		</div>
 	)
 }

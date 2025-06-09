@@ -13,8 +13,14 @@ import EditMessageDialog from '@/components/ui/chat/EditMessageDialog'
 export default function ChatPage() {
 	const params = useParams()
 	const chatId = String(params.id)
-	const { messages, uin, handleDeleteMessage, handleEditMessage, bottomRef } =
-		useChatMessages(chatId)
+	const {
+		messages,
+		uin,
+		handleDeleteMessage,
+		handleEditMessage,
+		bottomRef,
+		isLoading
+	} = useChatMessages(chatId)
 
 	const [editingMessage, setEditingMessage] = useState<null | {
 		id: string
@@ -51,7 +57,11 @@ export default function ChatPage() {
 					<ChatHeader />
 				</div>
 				<div className="messages flex-1 space-y-3 overflow-y-auto p-2">
-					{messages.length > 0 && messages[0]?.messages?.length > 0 ? (
+					{isLoading && params.id !== '0' ? (
+						<div className="flex h-full w-full items-center justify-center">
+							<p className="text-white">Loading...</p>
+						</div>
+					) : messages.length > 0 && messages[0]?.messages?.length > 0 ? (
 						[...messages[0].messages]
 							.sort(
 								(a, b) =>
