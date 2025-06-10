@@ -7,6 +7,7 @@ import VerifiedBadge from '../badges/verifiedBadge'
 import DeveloperBadge from '../badges/developerBadge'
 import AdminBadge from '../badges/adminBadge'
 import PremiumBadge from '../badges/premiumBadge'
+import HelperBadge from '../badges/helperBadge'
 
 export default function ChatElement(props: { uin: string; isOnline: boolean }) {
 	const [data, setData] = useState<any | null>(null)
@@ -48,8 +49,8 @@ export default function ChatElement(props: { uin: string; isOnline: boolean }) {
 					</h1>
 					{data?.role === 'dev' && <DeveloperBadge />}
 					{data?.role === 'admin' && <AdminBadge />}
-					{data?.role === 'premium' && <PremiumBadge />}
 					{data?.role === 'verified' && <VerifiedBadge />}
+					{data?.role === 'helper' && <HelperBadge />}
 				</div>
 				<p className="text-md">
 					{(() => {

@@ -42,7 +42,7 @@ export default function SideBar() {
 			if (res) {
 				setData(res)
 			} else {
-				window.location.reload()
+				// window.location.reload()
 			}
 			setIsLoading(false)
 		}
@@ -95,6 +95,10 @@ export default function SideBar() {
 							<Skeleton className="h-4 w-[200px]" />
 							<Skeleton className="h-4 w-[150px]" />
 						</div>
+					</div>
+				) : data.id === '' ? (
+					<div className="mt-5 flex h-full items-center justify-center">
+						<p className="text-gray-400">No chats found</p>
 					</div>
 				) : (
 					<>
