@@ -31,7 +31,7 @@ export default function LandingPage() {
 					className="mb-8 text-3xl font-extrabold select-none md:text-4xl"
 					style={{ color: '#F24822' }}
 				>
-					Hasher-chat 🧡
+					Welcome to Hasher-chat 🧡
 				</motion.h1>
 
 				{/* Buttons */}

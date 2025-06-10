@@ -17,19 +17,21 @@ interface ExpireResponse {
 }
 
 export default function usePremium() {
-	const [premium, setPremium] = useState<boolean>(false)
-	const [expire, setExpire] = useState<boolean>(false)
+	const [premium, setPremium] = useState<string>('none') // 'true' | 'none'
+	const [expire, setExpire] = useState<string>('none') // 'true' | 'none'
 
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const uin = await getUIN()
-				if (uin === 'false') return
+				if (uin === 'none') return
 
 				const premiumData = (await getPremium(uin)) as PremiumResponse
 				const expireData = (await getExpire(uin)) as ExpireResponse
-				setPremium(premiumData.premium)
-				setExpire(expireData.expire)
+				console.log('premiumData', premiumData, 'expireData', expireData)
+
+				setPremium(premiumData.premium ? 'true' : 'none')
+				setExpire(expireData.expire ? 'true' : 'none')
 			} catch (error) {
 				toast.error(
 					'Error fetching premium status!\nTry again later or contact support.'
