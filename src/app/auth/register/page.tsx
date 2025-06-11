@@ -13,11 +13,8 @@ export default function RegisterPage() {
 	const [isLoading, setIsLoading] = useState(false)
 	const [userName, setUserName] = useState('')
 
-	// Обработка user_name по условиям
 	const handleUserNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const raw = e.target.value
-
-		// Удаляем запрещённые символы
 		const cleaned = raw.replace(/[^a-zA-Z0-9._]/g, '')
 
 		// Убираем . или _ в начале и в конце
