@@ -41,7 +41,7 @@ export default function ChatFooter() {
 	return (
 		<footer
 			className={clsx(
-				'm-2 flex max-w-screen items-end rounded-lg border-2 border-[#F24822] p-2',
+				'm-2 flex max-w-screen items-end rounded-lg border-2 border-[#F24822] p-2 shadow-lg shadow-[#F24822]/20 transition-all duration-300 focus-within:shadow-[#F24822]/80',
 				{
 					'pointer-events-none opacity-50': params.id === '0'
 				}

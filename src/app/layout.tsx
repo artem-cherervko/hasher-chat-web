@@ -29,7 +29,10 @@ export default function RootLayout({
 	children: React.ReactNode
 }>) {
 	return (
-		<html lang="en" className={`${firaMono.variable} ${inriaSerif.variable}`}>
+		<html
+			lang="en"
+			className={`${firaMono.variable} ${inriaSerif.variable} dark`}
+		>
 			<body className={`h-screen w-screen antialiased`}>
 				<SpeedInsights />
 				{children}

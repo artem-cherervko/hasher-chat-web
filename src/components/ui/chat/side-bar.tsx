@@ -1,6 +1,6 @@
 'use client'
 
-import { LogOut, Search } from 'lucide-react'
+import { Search, Settings } from 'lucide-react'
 import ChatElement from './chat-element'
 import { useEffect, useState } from 'react'
 import { getChats } from '@/api/chat/getChats'
@@ -42,7 +42,7 @@ export default function SideBar() {
 			if (res) {
 				setData(res)
 			} else {
-				window.location.reload()
+				// window.location.reload()
 			}
 			setIsLoading(false)
 		}
@@ -79,13 +79,12 @@ export default function SideBar() {
 				<h2 className="text-xl font-bold">
 					{name.length > 16 ? name.substring(0, 13) + '...' : name}
 				</h2>
-				<LogOut
+				<Settings
 					onClick={async () => {
-						await Logout()
-						window.location.href = '/auth/login'
+						window.location.href = '/settings'
 					}}
 					className="h-7 w-7 text-[#F24822] transition-all duration-200 ease-in-out hover:cursor-pointer hover:text-white"
-				></LogOut>
+				></Settings>
 			</div>
 			<div className="flex flex-col overflow-y-auto">
 				{isLoading ? (
@@ -95,6 +94,10 @@ export default function SideBar() {
 							<Skeleton className="h-4 w-[200px]" />
 							<Skeleton className="h-4 w-[150px]" />
 						</div>
+					</div>
+				) : data.id === '' ? (
+					<div className="mt-5 flex h-full items-center justify-center">
+						<p className="text-gray-400">No chats found</p>
 					</div>
 				) : (
 					<>
