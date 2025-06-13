@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 import { ArrowRight, Loader2 } from 'lucide-react'
 import clsx from 'clsx'
 import { toast } from 'sonner'
+import { findUserByUIN } from '@/api/user/findUser'
 
 export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false)
@@ -29,24 +30,19 @@ export default function LoginPage() {
 				className="flex flex-col items-center justify-center space-y-3 p-4"
 				onSubmit={async e => {
 					e.preventDefault()
+					const uin = e.currentTarget.uin.value
+					const password = e.currentTarget.password.value
 					try {
 						setIsLoading(true)
-						localStorage.setItem('uin', e.currentTarget.uin.value)
-						localStorage.setItem('password', e.currentTarget.password.value)
-						router.replace('/auth/code')
-						// const res = await login(
-						// 	e.currentTarget.uin.value,
-						// 	e.currentTarget.password.value
-						// )
-						// if (res) {
-						// 	Cookies.set('u', res.accessToken, { path: '/' })
-						// 	Cookies.set('r', res.refreshToken, { path: '/' })
-						// 	setTimeout(() => {
-						// 		router.replace('/chat/0')
-						// 	}, 500)
-						// } else {
-						// 	toast.error('Login failed: Invalid response from server')
-						// }
+						const res = await findUserByUIN(uin)
+						if (res !== null) {
+							localStorage.setItem('uin', uin)
+							localStorage.setItem('password', password)
+							router.replace('/auth/code')
+						} else {
+							toast.error('User not found, please check UIN')
+							setIsLoading(false)
+						}
 					} catch (error) {
 						toast.error('Login failed: ' + (error as Error).message)
 					} finally {
@@ -95,7 +91,10 @@ export default function LoginPage() {
 					className="flex h-9 w-30 items-center justify-center rounded-lg !border !border-[#F24822] !text-white outline-0"
 				>
 					{isLoading ? (
-						<Loader2 className="ml-2 animate-spin" size={16} />
+						<Loader2
+							className="pointer-events-none ml-2 animate-spin"
+							size={16}
+						/>
 					) : (
 						<>
 							Login

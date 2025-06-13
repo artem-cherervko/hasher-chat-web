@@ -47,8 +47,19 @@ export default function SideBar() {
 			setIsLoading(false)
 		}
 		fetchChats()
+
+		async function updateChats() {
+			const res = await getChats()
+			if (res === data || res === false) {
+				return
+			} else {
+				setIsLoading(true)
+				setData(res)
+				setIsLoading(false)
+			}
+		}
 		const interval = setInterval(() => {
-			fetchChats()
+			updateChats()
 		}, 10000)
 
 		return () => clearInterval(interval)

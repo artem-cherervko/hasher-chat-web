@@ -11,7 +11,7 @@ export async function oAuth(email: string, code: string) {
 	)
 
 	if (await !res.ok) {
-		throw new Error('Failed to check OAuth')
+		return res.json()
 	}
 
 	return await res.json()

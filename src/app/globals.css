@@ -111,6 +111,21 @@
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
+@keyframes bellShake {
+  0% { transform: rotate(0deg); }
+  15% { transform: rotate(15deg); }
+  30% { transform: rotate(-10deg); }
+  45% { transform: rotate(15deg); }
+  60% { transform: rotate(-10deg); }
+  75% { transform: rotate(15deg); }
+  90% { transform: rotate(-10deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.animate-bellShake {
+  animation: bellShake 0.8s ease-in-out infinite;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
