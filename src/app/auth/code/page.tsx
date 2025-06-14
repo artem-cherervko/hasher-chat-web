@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/input-otp'
 import clsx from 'clsx'
 import { REGEXP_ONLY_DIGITS } from 'input-otp'
-import { Loader2 } from 'lucide-react'
+import { Loader2, SendHorizonalIcon } from 'lucide-react'
 import Cookies from 'js-cookie'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -22,6 +22,7 @@ export default function CodePage() {
 	const [isLoading, setIsLoading] = useState(false)
 	const [uin, setUin] = useState<string | null>(null)
 	const [password, setPassword] = useState<string | null>(null)
+	const [attempts, setAttempts] = useState<number>(3)
 
 	useEffect(() => {
 		const storedUin = localStorage.getItem('uin')
@@ -82,34 +83,55 @@ export default function CodePage() {
 				type="submit"
 				className="mt-4 rounded-lg !border-1 !border-[#F24822] px-4 py-2 !text-white"
 				onClick={async () => {
-					setIsLoading(true)
-					const res = await oAuth(
-						uin,
-						code.slice(0, 3) + '-' + code.slice(3, 6)
-					)
-					if (res.status === 200) {
-						const res2 = await login(uin, password)
-						if (res2) {
-							Cookies.set('u', res2.accessToken, { path: '/' })
-							Cookies.set('r', res2.refreshToken, { path: '/' })
-							toast.success('Login successful')
-							localStorage.removeItem('uin')
-							localStorage.removeItem('password')
-							setTimeout(() => {
-								router.replace('/chat/0')
-							}, 500)
-							setIsLoading(false)
+					if (attempts >= 1) {
+						setIsLoading(true)
+						const res = await oAuth(
+							uin,
+							code.slice(0, 3) + '-' + code.slice(3, 6)
+						)
+						if (res.status === 200) {
+							const res2 = await login(uin, password)
+							if (res2) {
+								Cookies.set('u', res2.accessToken, { path: '/' })
+								Cookies.set('r', res2.refreshToken, { path: '/' })
+								toast.success('Login successful')
+								localStorage.removeItem('uin')
+								localStorage.removeItem('password')
+								setTimeout(() => {
+									router.replace('/chat/0')
+								}, 500)
+								setIsLoading(false)
+							} else {
+								toast.error('Login failed: please try again')
+								localStorage.removeItem('uin')
+								localStorage.removeItem('password')
+								router.replace('/auth/login')
+								setIsLoading(false)
+							}
 						} else {
-							toast.error('Login failed: Invalid response from server')
+							toast.error('OAuth failed: code not correct!')
+							setAttempts(prev => prev - 1)
 							setIsLoading(false)
 						}
 					} else {
-						toast.error('OAuth failed: Invalid response from server')
 						setIsLoading(false)
+						toast.error(
+							'Login failed: please try again, you expire your attempts!'
+						)
+						localStorage.removeItem('uin')
+						localStorage.removeItem('password')
+						router.replace('/auth/login')
 					}
 				}}
 			>
-				{isLoading ? <Loader2 className="animate-spin" /> : 'Submit'}
+				{isLoading ? (
+					<Loader2 className="pointer-events-none animate-spin opacity-50" />
+				) : (
+					<div className={'flex flex-row items-center'}>
+						Submit
+						<SendHorizonalIcon size={16} className="ml-4" />
+					</div>
+				)}
 			</button>
 		</div>
 	)

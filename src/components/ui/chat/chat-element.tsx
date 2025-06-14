@@ -8,43 +8,60 @@ import DeveloperBadge from '../badges/developerBadge'
 import AdminBadge from '../badges/adminBadge'
 import PremiumBadge from '../badges/premiumBadge'
 import HelperBadge from '../badges/helperBadge'
+import { getLastMessage } from '@/api/chat/getLastMessage'
+import { Bell } from 'lucide-react'
 
 export default function ChatElement(props: { uin: string; isOnline: boolean }) {
 	const [data, setData] = useState<any | null>(null)
+	const [lastMessage, setLastMessage] = useState(null)
 
 	useEffect(() => {
 		const fetchData = async () => {
 			const res = await GetUserData(props.uin)
 			setData(res)
 		}
+
+		const fetchLastMessage = async () => {
+			const res = await getLastMessage(props.uin)
+			setLastMessage(res)
+		}
+
 		fetchData()
-	}, [props.uin, setData])
+		fetchLastMessage()
+
+		const interval = setInterval(() => {
+			fetchLastMessage()
+		}, 5000)
+
+		return () => clearInterval(interval)
+	}, [props.uin])
 
 	return (
 		<Link
 			href={`/chat/${props.uin}`}
-			className="flex flex-row items-center justify-start space-x-4 p-2 transition-all duration-200 ease-in-out hover:bg-[#f248223e] hover:text-white"
+			className="flex items-center gap-4 p-2 transition-all duration-200 hover:bg-[#f248223e] hover:text-white"
 			prefetch={true}
 		>
-			<div className="flex flex-row">
+			<div className="relative h-12 w-12 flex-shrink-0">
 				<Image
 					alt="User profile photo"
 					src={`/${data?.photo_url === 'd' ? 'd.png' : `${data?.photo_url.split('/')[1]}`}`}
-					width={50}
-					height={50}
+					width={48}
+					height={48}
+					className="rounded-full object-cover"
 				/>
 				<div
-					className={clsx('right-0 bottom-0 mt-auto h-3 w-3 rounded-2xl', {
-						'bg-[#F24822]': props.isOnline === true,
-						'bg-gray-700': props.isOnline === false
-					})}
+					className={clsx(
+						'absolute right-0 bottom-0 h-3 w-3 rounded-full',
+						props.isOnline ? 'bg-[#F24822]' : 'bg-gray-700'
+					)}
 				/>
 			</div>
-			<div className="flex flex-col">
-				<div className="flex flex-row items-center justify-center space-x-2">
-					<h1 className="text-xl font-bold">
+			<div className="flex flex-1 flex-col overflow-hidden">
+				<div className="flex items-center gap-2">
+					<h1 className="truncate text-xl font-bold">
 						{data?.name.length > 16
-							? data?.name.substring(0, 16) + '...'
+							? data?.name.slice(0, 16) + '...'
 							: data?.name}
 					</h1>
 					{data?.role === 'dev' && <DeveloperBadge />}
@@ -52,33 +69,18 @@ export default function ChatElement(props: { uin: string; isOnline: boolean }) {
 					{data?.role === 'verified' && <VerifiedBadge />}
 					{data?.role === 'helper' && <HelperBadge />}
 				</div>
-				<p className="text-md">
-					{(() => {
-						const lastReceived = data?.received_messages?.at(-1)
-						const lastSent = data?.sended_messages?.at(-1)
-
-						// собираем во временный массив только те, что есть
-						const candidates = [lastReceived, lastSent].filter(Boolean) as {
-							content: string
-							created_at: string
-						}[]
-
-						if (candidates.length === 0) return 'No messages'
-
-						// сортируем по дате (новейшее первым)
-						candidates.sort(
-							(a, b) =>
-								new Date(b.created_at).getTime() -
-								new Date(a.created_at).getTime()
-						)
-
-						// берём самый первый (новейший)
-						const message = candidates[0].content
-						return message.length > 25
-							? message.substring(0, 25) + '...'
-							: message
-					})()}
-				</p>
+				<div className="flex w-full items-center justify-between">
+					<p className="text-md max-w-[80%] truncate overflow-hidden text-ellipsis">
+						{lastMessage?.content || 'No messages'}
+					</p>
+					<Bell
+						size={25}
+						className={clsx('inline-block opacity-50', {
+							'animate-bellShake text-[#F24822] opacity-100':
+								!lastMessage?.is_read
+						})}
+					/>
+				</div>
 			</div>
 		</Link>
 	)
