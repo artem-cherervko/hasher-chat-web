@@ -28,6 +28,12 @@ export default function ChatElement(props: { uin: string; isOnline: boolean }) {
 
 		fetchData()
 		fetchLastMessage()
+
+		const interval = setInterval(() => {
+			fetchLastMessage()
+		}, 5000)
+
+		return () => clearInterval(interval)
 	}, [props.uin])
 
 	return (
