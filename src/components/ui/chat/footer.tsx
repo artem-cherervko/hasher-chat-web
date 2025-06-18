@@ -2,7 +2,7 @@
 
 import { sendMessage } from '@/api/chat/ws'
 import clsx from 'clsx'
-import { Send } from 'lucide-react'
+import { Image, ImageIcon, Send } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import { KeyboardEvent, useRef } from 'react'
 
@@ -31,7 +31,16 @@ export default function ChatFooter() {
 		textarea.style.height = 'auto'
 	}
 
+	const isMobileOrTablet = () => {
+		const ua = navigator.userAgent
+		return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+			ua
+		)
+	}
+
 	const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+		if (isMobileOrTablet()) return
+
 		if (e.key === 'Enter' && !e.shiftKey) {
 			e.preventDefault()
 			handleSendMessage()
@@ -54,6 +63,10 @@ export default function ChatFooter() {
 				onInput={resizeTextarea}
 				rows={1}
 				className="placeholder:text-md max-h-48 min-h-[36px] w-full resize-none overflow-x-hidden overflow-y-auto p-2 break-words whitespace-pre-wrap outline-none placeholder:font-semibold"
+			/>
+			<ImageIcon
+				className="mb-1.5 self-auto text-[#F24822]"
+				onClick={() => {}}
 			/>
 			<button
 				type="submit"

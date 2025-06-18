@@ -7,12 +7,14 @@ import clsx from 'clsx'
 import { useParams } from 'next/navigation'
 import { useChatMessages } from '@/hooks/useChatMessages'
 import ExampleMessages from '@/components/ui/chat/exampleMessages'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import EditMessageDialog from '@/components/ui/chat/EditMessageDialog'
+import ScrollDown from '@/components/ui/scrollDown'
 
 export default function ChatPage() {
 	const params = useParams()
 	const chatId = String(params.id)
+	const [showScrollDown, setShowScrollDown] = useState(false)
 	const {
 		messages,
 		uin,
@@ -41,6 +43,24 @@ export default function ChatPage() {
 			closeEditDialog()
 		}
 	}
+
+	useEffect(() => {
+		const container = document.querySelector('.messages') as HTMLDivElement
+		if (!container) return
+
+		const handleScroll = () => {
+			const nearBottom =
+				container.scrollHeight - container.scrollTop - container.clientHeight <
+				100
+
+			setShowScrollDown(!nearBottom)
+		}
+
+		container.addEventListener('scroll', handleScroll)
+		handleScroll()
+
+		return () => container.removeEventListener('scroll', handleScroll)
+	}, [messages])
 
 	return (
 		<div
@@ -72,6 +92,7 @@ export default function ChatPage() {
 								<Message
 									key={message.id}
 									text={message.content}
+									updatedAt={message.updated_at}
 									time={message.created_at}
 									from={message.sender === uin ? 'me' : 'other'}
 									read={message.is_read}
@@ -88,6 +109,7 @@ export default function ChatPage() {
 						</div>
 					)}
 					<div ref={bottomRef} className="h-1" />
+					{showScrollDown && <ScrollDown ref={bottomRef} />}
 				</div>
 				<div className="mt-auto">
 					<ChatFooter />

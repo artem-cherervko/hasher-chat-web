@@ -9,10 +9,17 @@ import { useChatHeader } from '@/hooks/useChatHeader'
 export default function ChatHeader() {
 	const { id } = useParams()
 	const { toggleShoving, shoving } = useSidebar()
-	const { userName } = useChatHeader(id as string)
+	const { userName, lastSeen } = useChatHeader(id as string)
 
 	return (
-		<header className="flex h-full w-full flex-row items-center justify-between border-b-2 border-[#F24822] bg-[#052028] p-2 font-[family-name:var(--font-inria-serif)]">
+		<header
+			className={clsx(
+				'flex h-full w-full flex-row items-center justify-between border-b-2 border-[#F24822] bg-[#052028] p-2 font-[family-name:var(--font-inria-serif)]',
+				{
+					'xl:pl-[35rem]': shoving
+				}
+			)}
+		>
 			<div className={clsx('logo', { hidden: shoving })}>
 				<p
 					className={
@@ -24,8 +31,15 @@ export default function ChatHeader() {
 				</p>
 				<hr className="w-10 origin-right rotate-90" />
 			</div>
-			<h2 className="text-xl font-bold">{userName}</h2>
-			<Image alt="User profile photo" src={'/d.png'} width={30} height={30} />
+			<div
+				className={clsx('flex flex-col items-center justify-center', {
+					'self-center': !shoving
+				})}
+			>
+				<h2 className="text-xl font-bold">{userName}</h2>
+				<span>{lastSeen}</span>
+			</div>
+			<Image alt="D" src={'/d.png'} width={30} height={30} />
 		</header>
 	)
 }

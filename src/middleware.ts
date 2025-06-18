@@ -12,16 +12,13 @@ export async function middleware(request: NextRequest) {
 	if (accessToken) {
 		const isAccessValid = await checkAccessToken(accessToken)
 		if (isAccessValid) {
-			// accessToken валиден — пропускаем дальше
 			return NextResponse.next()
 		}
-		// accessToken невалидный, пытаемся обновить через refreshToken
 	}
 
 	if (refreshToken) {
 		const refreshRes = await checkRefreshToken(refreshToken)
 		if (refreshRes && refreshRes.accessToken && refreshRes.refreshToken) {
-			// обновили токены — ставим куки и пропускаем дальше
 			const response = NextResponse.next()
 			response.cookies.set({
 				name: 'u',

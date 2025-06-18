@@ -2,7 +2,7 @@
 
 import { addUser } from '@/api/auth/register'
 import clsx from 'clsx'
-import { ArrowRight, Loader2 } from 'lucide-react'
+import { ArrowRight, EyeClosed, EyeIcon, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -11,6 +11,7 @@ import { toast } from 'sonner'
 export default function RegisterPage() {
 	const router = useRouter()
 	const [isLoading, setIsLoading] = useState(false)
+	const [passwordInputType, setPasswordInputType] = useState('password')
 	const [userName, setUserName] = useState('')
 
 	const handleUserNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,7 +26,7 @@ export default function RegisterPage() {
 
 	return (
 		<div className="drop-shadow-accent flex flex-col items-center justify-center rounded-lg border border-[#0A2B44] bg-[#051A27] p-4 text-white drop-shadow-xl">
-			<h1 className="mb-4 text-2xl font-bold text-[#F24822]">Register</h1>
+			<h1 className="text-2xl font-bold text-[#F24822]">Register</h1>
 
 			<form
 				className="flex flex-col items-center justify-center space-y-3 p-4"
@@ -41,7 +42,7 @@ export default function RegisterPage() {
 					const resp = await addUser(email, name, userName, password)
 
 					if (resp) {
-						toast.success('User registered successfully. Please login.')
+						toast.success('User registered successfully! UIN send to email')
 						router.replace('/auth/login')
 					} else {
 						toast.error('Failed to register user. Please try again.')
@@ -59,7 +60,7 @@ export default function RegisterPage() {
 						name="name"
 						placeholder="Name..."
 						className={clsx(
-							'rounded-lg border border-[#F24822] bg-[#0A2B44] p-2 text-white outline-none',
+							'rounded-lg border border-[#F24822] p-2 text-white outline-none',
 							{ 'pointer-events-none opacity-50': isLoading }
 						)}
 						required
@@ -76,7 +77,7 @@ export default function RegisterPage() {
 						name="email"
 						placeholder="example@gmail.com"
 						className={clsx(
-							'rounded-lg border border-[#F24822] bg-[#0A2B44] p-2 text-white outline-none',
+							'rounded-lg border border-[#F24822] p-2 text-white outline-none',
 							{ 'pointer-events-none opacity-50': isLoading }
 						)}
 						required
@@ -95,7 +96,7 @@ export default function RegisterPage() {
 						onChange={handleUserNameChange}
 						placeholder="User name..."
 						className={clsx(
-							'rounded-lg border border-[#F24822] bg-[#0A2B44] p-2 text-white outline-none',
+							'rounded-lg border border-[#F24822] p-2 text-white outline-none',
 							{ 'pointer-events-none opacity-50': isLoading }
 						)}
 						required
@@ -107,15 +108,31 @@ export default function RegisterPage() {
 						Password:
 					</label>
 					<input
-						type="password"
+						type={passwordInputType}
 						id="password"
 						name="password"
 						placeholder="Password..."
 						className={clsx(
-							'rounded-lg border border-[#F24822] bg-[#0A2B44] p-2 text-white outline-none',
+							'rounded-lg border border-[#F24822] p-2 text-white outline-none',
 							{ 'pointer-events-none opacity-50': isLoading }
 						)}
 						required
+					/>
+					<EyeIcon
+						onClick={() => {
+							if (passwordInputType === 'password') {
+								setPasswordInputType('text')
+							} else {
+								setPasswordInputType('password')
+							}
+						}}
+						className={clsx(
+							'absolute right-10.5 bottom-30 text-white hover:cursor-pointer',
+							{
+								'!text-[#F24822]': passwordInputType === 'text'
+							}
+						)}
+						size={20}
 					/>
 				</div>
 

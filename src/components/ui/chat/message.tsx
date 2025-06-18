@@ -5,6 +5,7 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
+	DropdownMenuLabel,
 	DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { MoreVertical, Pencil, Trash } from 'lucide-react'
@@ -13,6 +14,7 @@ import { useParams } from 'next/navigation'
 export default function Message(props: {
 	text: string
 	time: string
+	updatedAt: string
 	from: 'me' | 'other'
 	onEdit?: () => void
 	onDelete?: () => void
@@ -24,9 +26,7 @@ export default function Message(props: {
 		<div
 			className={clsx('flex w-full', { 'justify-end': props.from === 'me' })}
 		>
-			<div
-				className={'relative inline-block h-fit md:max-w-[80%] lg:max-w-[60%]'}
-			>
+			<div className={'relative inline-block h-fit max-w-[80%]'}>
 				<div
 					className={clsx(
 						'rounded-lg border-2 p-2 pr-8 drop-shadow-sm drop-shadow-gray-800 transition-opacity active:opacity-90',
@@ -51,7 +51,7 @@ export default function Message(props: {
 								'!text-muted-foreground': props.from === 'other'
 							})}
 						>
-							t: {props.time.split(' ')[1]}{' '}
+							d: {props.time.split(' ')[0]} t: {props.time.split(' ')[1]}{' '}
 						</p>
 						<span
 							className={clsx('text-muted-foreground text-xs', {
@@ -66,19 +66,28 @@ export default function Message(props: {
 				{/* Dropdown Menu */}
 				<div
 					className={clsx('absolute top-1 right-1', {
-						hidden: props.from === 'other' || id === '0'
+						// hidden: props.from === 'other' || id === '0'
+						hidden: id === '0' || (props.from === 'other' && !props.edited)
 					})}
 				>
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<button className="text-muted-foreground hover:text-white">
-								<MoreVertical size={16} />
+								<MoreVertical size={16} className="!text-white" />
 							</button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent
 							align="end"
-							className="w-32 bg-[#052028] text-white"
+							className={clsx('w-64 bg-[#052028] text-white', {
+								'w-32': !props.edited
+							})}
 						>
+							{props.edited ? (
+								<DropdownMenuLabel>
+									Updated at: d: {props.updatedAt.split(' ')[0]} t:{' '}
+									{props.updatedAt.split(' ')[1]}{' '}
+								</DropdownMenuLabel>
+							) : null}
 							<DropdownMenuItem
 								onClick={props.onEdit}
 								className={clsx('', { hidden: props.from === 'other' })}
@@ -88,7 +97,9 @@ export default function Message(props: {
 							</DropdownMenuItem>
 							<DropdownMenuItem
 								onClick={props.onDelete}
-								className="text-red-500 focus:text-red-500"
+								className={clsx('text-red-500 focus:text-red-500', {
+									hidden: props.from === 'other'
+								})}
 							>
 								<Trash className="mr-2 h-4 w-4" />
 								Delete

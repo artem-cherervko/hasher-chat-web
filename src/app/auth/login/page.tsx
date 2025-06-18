@@ -5,12 +5,13 @@ import { useRouter } from 'next/navigation'
 import Cookies from 'js-cookie'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { ArrowRight, Loader2 } from 'lucide-react'
+import { ArrowRight, EyeIcon, Loader2 } from 'lucide-react'
 import clsx from 'clsx'
 import { toast } from 'sonner'
 import { findUserByUIN } from '@/api/user/findUser'
 
 export default function LoginPage() {
+	const [passwordInputType, setPasswordInputType] = useState('password')
 	const [isLoading, setIsLoading] = useState(false)
 	const router = useRouter()
 
@@ -73,7 +74,7 @@ export default function LoginPage() {
 						Password:
 					</label>
 					<input
-						type="password"
+						type={passwordInputType}
 						id="password"
 						name="password"
 						placeholder="Password..."
@@ -84,6 +85,22 @@ export default function LoginPage() {
 							}
 						)}
 						required
+					/>
+					<EyeIcon
+						onClick={() => {
+							if (passwordInputType === 'password') {
+								setPasswordInputType('text')
+							} else {
+								setPasswordInputType('password')
+							}
+						}}
+						className={clsx(
+							'absolute right-10.5 bottom-28 text-white hover:cursor-pointer',
+							{
+								'!text-[#F24822]': passwordInputType === 'text'
+							}
+						)}
+						size={20}
 					/>
 				</div>
 				<button
