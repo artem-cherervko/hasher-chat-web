@@ -69,10 +69,10 @@ export default function SideBar() {
 	return (
 		<div
 			className={clsx(
-				'relative h-screen w-[20rem] max-w-[20rem] min-w-[20rem] flex-col border-r-2 border-[#F24822] bg-[#052028] font-[family-name:var(--font-inria-serif)]',
+				'left-0 z-10 h-screen w-[20rem] max-w-[20rem] min-w-[20rem] flex-col border-r-2 border-[#F24822] bg-[#052028] font-[family-name:var(--font-inria-serif)] transition-all duration-300 ease-in-out',
 				{
 					hidden: !shoving,
-					'lg:flex': shoving
+					'md:absolute lg:relative lg:flex': shoving
 				}
 			)}
 		>

@@ -17,8 +17,12 @@ export default function LoginPage() {
 
 	useEffect(() => {
 		const token = Cookies.get('u')
-		if (token) {
+		if (token !== undefined) {
+			setIsLoading(true)
 			router.replace('/chat/0', { scroll: false })
+		} else {
+			Cookies.remove('u')
+			Cookies.remove('r')
 		}
 	}, [])
 
@@ -39,7 +43,7 @@ export default function LoginPage() {
 						if (res !== null) {
 							localStorage.setItem('uin', uin)
 							localStorage.setItem('password', password)
-							router.replace('/auth/code')
+							router.push('/auth/code')
 						} else {
 							toast.error('User not found, please check UIN')
 							setIsLoading(false)

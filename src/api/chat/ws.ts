@@ -8,7 +8,8 @@ let uin: string
 export async function connectWebSocket(
 	onMessage?: (data: any) => void,
 	onEdit?: (data: any) => void,
-	onDelete?: (data: any) => void
+	onDelete?: (data: any) => void,
+	onTyping?: (data: any) => void
 ) {
 	if (socket?.connected) return
 
@@ -34,6 +35,10 @@ export async function connectWebSocket(
 
 	socket.on('delete', data => {
 		if (onDelete) onDelete(data)
+	})
+
+	socket.on('typing', data => {
+		if (onTyping) onTyping(data)
 	})
 }
 
@@ -75,6 +80,16 @@ export async function deleteMessage(message: { chat_with_uin: string }) {
 		chat_with_uin: message.chat_with_uin,
 		uin: uin
 	})
+}
+
+export async function sendTyping(data: { chat_with_uin: string }) {
+	if (!socket) {
+		throw new Error('WebSocket is not connected. Please connect first.')
+	} else {
+		socket.emit('typingMessage', {
+			chat_with_uin: data.chat_with_uin
+		})
+	}
 }
 
 // {

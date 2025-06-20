@@ -14,10 +14,7 @@ export default function ChatHeader() {
 	return (
 		<header
 			className={clsx(
-				'flex h-full w-full flex-row items-center justify-between border-b-2 border-[#F24822] bg-[#052028] p-2 font-[family-name:var(--font-inria-serif)]',
-				{
-					'xl:pl-[35rem]': shoving
-				}
+				'flex h-full w-full flex-row items-center justify-between border-b-2 border-[#F24822] bg-[#052028] p-2 font-[family-name:var(--font-inria-serif)]'
 			)}
 		>
 			<div className={clsx('logo', { hidden: shoving })}>

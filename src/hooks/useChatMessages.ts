@@ -4,7 +4,8 @@ import {
 	connectWebSocket,
 	disconnectSocket,
 	editMessage,
-	deleteMessage
+	deleteMessage,
+	sendTyping
 } from '@/api/chat/ws'
 import { getUIN } from '@/api/chat/getChats'
 import { DeleteMessage, EditMessage } from '@/api/chat/Message'
@@ -16,6 +17,7 @@ export function useChatMessages(chatId: string) {
 	const [uin, setUin] = useState('')
 	const bottomRef = useRef<HTMLDivElement | null>(null)
 	const [isLoading, setIsLoading] = useState(true)
+	const [isTyping, setIsTyping] = useState<boolean>(false)
 
 	useEffect(() => {
 		if (chatId === '0') return
@@ -34,6 +36,8 @@ export function useChatMessages(chatId: string) {
 					reloadMessages()
 					readAllMessages({ chat_with: chatId })
 					return
+				} else if (data.type === 'typing') {
+					setIsTyping(true)
 				}
 
 				const newMessage = {
@@ -106,12 +110,18 @@ export function useChatMessages(chatId: string) {
 		await reloadMessages()
 	}
 
+	async function handleTyping(chat_with_uin: string) {
+		await sendTyping({ chat_with_uin })
+	}
+
 	return {
 		messages,
 		uin,
 		handleDeleteMessage,
 		handleEditMessage,
+		sendTyping,
 		bottomRef,
-		isLoading
+		isLoading,
+		isTyping
 	}
 }
