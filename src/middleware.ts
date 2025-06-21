@@ -6,7 +6,11 @@ export async function middleware(request: NextRequest) {
 	const refreshToken = request.cookies.get('r')?.value
 
 	if (!accessToken && !refreshToken) {
-		return NextResponse.redirect(new URL('/auth/login', request.url))
+		const response = NextResponse.redirect(new URL('/auth/login', request.url))
+		response.cookies.delete('u')
+		response.cookies.delete('r')
+
+		return response
 	}
 
 	if (accessToken) {
@@ -34,8 +38,11 @@ export async function middleware(request: NextRequest) {
 		}
 	}
 
-	// Если оба токена невалидны — редирект на логин
-	return NextResponse.redirect(new URL('/auth/login', request.url))
+	const response = NextResponse.rewrite(new URL('/auth/login', request.url))
+	response.cookies.delete('u')
+	response.cookies.delete('r')
+
+	return response
 }
 
 export const config = {
