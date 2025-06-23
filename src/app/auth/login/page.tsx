@@ -27,7 +27,7 @@ export default function LoginPage() {
 	}, [])
 
 	return (
-		<div className="drop-shadow-accent flex flex-col items-center justify-center rounded-lg border-1 border-b-cyan-950 bg-[#051A27] p-4 drop-shadow-xl">
+		<div className="drop-shadow-accent flex flex-col items-center justify-center rounded-lg border-1 bg-[#051A27] p-4 drop-shadow-xl">
 			<h1 className="flex items-center justify-center text-2xl font-bold">
 				Login
 			</h1>

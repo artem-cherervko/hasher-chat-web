@@ -12,4 +12,17 @@ export interface Message {
 export interface ChatMessages {
 	chat_id: string
 	messages: Message[]
+	images: IImage[]
 }
+
+export interface IImage {
+	key: string
+	sender: string
+	image_url: string
+	sent_at: string
+	text: string
+}
+
+export type ChatItem =
+	| (Message & { type: 'message' })
+	| (IImage & { type: 'image'; created_at: string })

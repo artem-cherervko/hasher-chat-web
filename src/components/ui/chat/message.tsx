@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { MoreVertical, Pencil, Trash } from 'lucide-react'
 import { useParams } from 'next/navigation'
+import dayjs from '@/lib/dayjs'
 
 export default function Message(props: {
 	text: string
@@ -21,6 +22,10 @@ export default function Message(props: {
 	read?: boolean
 	edited?: boolean
 }) {
+	const localTime = dayjs
+		.utc(props.time, 'YYYY.MM.DD HH:mm:ss')
+		.tz('Europe/Kyiv')
+		.format('YYYY.MM.DD HH:mm:ss')
 	const { id } = useParams()
 	return (
 		<div
@@ -51,7 +56,7 @@ export default function Message(props: {
 								'!text-muted-foreground': props.from === 'other'
 							})}
 						>
-							d: {props.time.split(' ')[0]} t: {props.time.split(' ')[1]}{' '}
+							d: {localTime.split(' ')[0]} t: {localTime.split(' ')[1]}{' '}
 						</p>
 						<span
 							className={clsx('text-muted-foreground text-xs', {

@@ -10,16 +10,18 @@ import ExampleMessages from '@/components/ui/chat/exampleMessages'
 import { useEffect, useState } from 'react'
 import EditMessageDialog from '@/components/ui/chat/EditMessageDialog'
 import ScrollDown from '@/components/ui/scrollDown'
+import ImageElement from '@/components/ui/chat/Image'
 
 export default function ChatPage() {
 	const params = useParams()
 	const chatId = String(params.id)
 	const [showScrollDown, setShowScrollDown] = useState(false)
 	const {
-		messages,
+		chatItems,
 		uin,
 		handleDeleteMessage,
 		handleEditMessage,
+		handleDeleteImage,
 		bottomRef,
 		isLoading
 	} = useChatMessages(chatId)
@@ -60,7 +62,7 @@ export default function ChatPage() {
 		handleScroll()
 
 		return () => container.removeEventListener('scroll', handleScroll)
-	}, [messages])
+	}, [chatItems])
 
 	return (
 		<div
@@ -81,26 +83,32 @@ export default function ChatPage() {
 						<div className="flex h-full w-full items-center justify-center">
 							<p className="text-white">Loading...</p>
 						</div>
-					) : messages.length > 0 && messages[0]?.messages?.length > 0 ? (
-						[...messages[0].messages]
-							.sort(
-								(a, b) =>
-									new Date(a.created_at).getTime() -
-									new Date(b.created_at).getTime()
-							)
-							.map(message => (
+					) : chatItems.length > 0 ? (
+						chatItems.map(item =>
+							item.type === 'message' ? (
 								<Message
-									key={message.id}
-									text={message.content}
-									updatedAt={message.updated_at}
-									time={message.created_at}
-									from={message.sender === uin ? 'me' : 'other'}
-									read={message.is_read}
-									edited={message.is_edited}
-									onDelete={() => handleDeleteMessage(message.id)}
-									onEdit={() => openEditDialog(message.id, message.content)}
+									key={item.id}
+									text={item.content}
+									updatedAt={item.updated_at}
+									time={item.created_at}
+									from={item.sender === uin ? 'me' : 'other'}
+									read={item.is_read}
+									edited={item.is_edited}
+									onDelete={() => handleDeleteMessage(item.id)}
+									onEdit={() => openEditDialog(item.id, item.content)}
 								/>
-							))
+							) : (
+								<ImageElement
+									key={item.key}
+									image_url={item.image_url}
+									sender={item.sender}
+									sent_at={item.created_at}
+									text={item.text || ''}
+									uin={uin}
+									onDelete={() => handleDeleteImage(item.key)}
+								/>
+							)
+						)
 					) : params.id === '0' ? (
 						<ExampleMessages />
 					) : (

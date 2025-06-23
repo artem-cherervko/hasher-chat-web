@@ -1,5 +1,7 @@
 'use client'
 
+import { getUIN } from '@/api/chat/getChats'
+import { sendImage } from '@/api/chat/image/sendImage'
 import { sendMessage } from '@/api/chat/ws'
 import clsx from 'clsx'
 import { Image, ImageIcon, Send } from 'lucide-react'
@@ -9,6 +11,7 @@ import { KeyboardEvent, useRef } from 'react'
 export default function ChatFooter() {
 	const params = useParams()
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
+	const fileInputRef = useRef<HTMLInputElement>(null)
 
 	const resizeTextarea = () => {
 		const textarea = textareaRef.current
@@ -47,6 +50,21 @@ export default function ChatFooter() {
 		}
 	}
 
+	const handleImageClick = () => fileInputRef.current?.click()
+
+	const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0]
+		if (!file) return
+
+		try {
+			await sendImage(file, await getUIN(), params.id as string)
+		} catch (err) {
+			console.error(err)
+		} finally {
+			e.target.value = ''
+		}
+	}
+
 	return (
 		<footer
 			className={clsx(
@@ -64,9 +82,19 @@ export default function ChatFooter() {
 				rows={1}
 				className="placeholder:text-md max-h-48 min-h-[36px] w-full resize-none overflow-x-hidden overflow-y-auto p-2 break-words whitespace-pre-wrap outline-none placeholder:font-semibold"
 			/>
+			<input
+				type="file"
+				accept="image/*"
+				name="send_image"
+				id="send_image"
+				ref={fileInputRef}
+				onChange={handleFileChange}
+				style={{ display: 'none' }}
+			/>
+
 			<ImageIcon
-				className="mb-1.5 self-auto text-[#F24822]"
-				onClick={() => {}}
+				className="mb-1.5 cursor-pointer self-auto text-[#F24822]"
+				onClick={handleImageClick}
 			/>
 			<button
 				type="submit"

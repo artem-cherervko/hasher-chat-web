@@ -10,10 +10,11 @@ import {
 import { getUIN } from '@/api/chat/getChats'
 import { DeleteMessage, EditMessage } from '@/api/chat/Message'
 import { readAllMessages } from '@/api/chat/readAllMessages'
-import { ChatMessages, Message } from '@/types/chat'
+import { ChatMessages, Message, ChatItem } from '@/types/chat'
+import { DeleteImage } from '@/api/chat/image/deleteImage'
 
 export function useChatMessages(chatId: string) {
-	const [messages, setMessages] = useState<ChatMessages[]>([])
+	const [chatItems, setChatItems] = useState<ChatItem[]>([])
 	const [uin, setUin] = useState('')
 	const bottomRef = useRef<HTMLDivElement | null>(null)
 	const [isLoading, setIsLoading] = useState(true)
@@ -39,40 +40,9 @@ export function useChatMessages(chatId: string) {
 				} else if (data.type === 'typing') {
 					setIsTyping(true)
 				}
-
-				const newMessage = {
-					id: data.message_id,
-					content: data.message,
-					created_at: data.time,
-					updated_at: data.time,
-					sender: data.sender,
-					receiver: data.receiver,
-					is_read: data.is_read,
-					is_edited: data.is_edited
-				}
-
-				setMessages(prev => {
-					if (prev.length === 0) {
-						return [
-							{
-								chat_id: chatId,
-								messages: [newMessage]
-							}
-						]
-					}
-					const exists = prev[0].messages.some(m => m.id === newMessage.id)
-					if (exists) return prev
-					return [
-						{
-							...prev[0],
-							messages: [...prev[0].messages, newMessage]
-						}
-					]
-				})
 			})
 
-			const initialData = await AllMessages(chatId)
-			if (isMounted && initialData) setMessages(initialData)
+			await reloadMessages()
 			setIsLoading(false)
 		}
 
@@ -80,7 +50,6 @@ export function useChatMessages(chatId: string) {
 		readAllMessages({ chat_with: chatId })
 
 		const intervalId = setInterval(() => {
-			// readAllMessages({ chat_with: chatId })
 			reloadMessages()
 		}, 3000)
 
@@ -95,13 +64,38 @@ export function useChatMessages(chatId: string) {
 
 	async function reloadMessages() {
 		const data = await AllMessages(chatId)
-		if (data) setMessages(data)
+		if (!data || data.length === 0) return
+
+		const msgs = data[0].messages.map(msg => ({
+			type: 'message' as const,
+			...msg,
+			created_at: msg.created_at
+		}))
+
+		const imgs = data[0].images.map(img => ({
+			type: 'image' as const,
+			...img,
+			created_at: img.sent_at
+		}))
+
+		const combined = [...msgs, ...imgs].sort(
+			(a, b) =>
+				new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+		)
+
+		setChatItems(combined)
 	}
 
 	async function handleDeleteMessage(messageId: string) {
 		await DeleteMessage(messageId)
 		await deleteMessage({ chat_with_uin: chatId })
 		await reloadMessages()
+	}
+
+	async function handleDeleteImage(key: string) {
+		await DeleteImage(key)
+		await reloadMessages()
+		await deleteMessage({ chat_with_uin: chatId })
 	}
 
 	async function handleEditMessage(messageId: string, newMessage: string) {
@@ -115,10 +109,11 @@ export function useChatMessages(chatId: string) {
 	}
 
 	return {
-		messages,
+		chatItems,
 		uin,
 		handleDeleteMessage,
 		handleEditMessage,
+		handleDeleteImage,
 		sendTyping,
 		bottomRef,
 		isLoading,
