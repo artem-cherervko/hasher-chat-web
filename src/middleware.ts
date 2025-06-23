@@ -6,22 +6,23 @@ export async function middleware(request: NextRequest) {
 	const refreshToken = request.cookies.get('r')?.value
 
 	if (!accessToken && !refreshToken) {
-		return NextResponse.redirect(new URL('/auth/login', request.url))
+		const response = NextResponse.redirect(new URL('/auth/login', request.url))
+		response.cookies.delete('u')
+		response.cookies.delete('r')
+
+		return response
 	}
 
 	if (accessToken) {
 		const isAccessValid = await checkAccessToken(accessToken)
 		if (isAccessValid) {
-			// accessToken валиден — пропускаем дальше
 			return NextResponse.next()
 		}
-		// accessToken невалидный, пытаемся обновить через refreshToken
 	}
 
 	if (refreshToken) {
 		const refreshRes = await checkRefreshToken(refreshToken)
 		if (refreshRes && refreshRes.accessToken && refreshRes.refreshToken) {
-			// обновили токены — ставим куки и пропускаем дальше
 			const response = NextResponse.next()
 			response.cookies.set({
 				name: 'u',
@@ -37,8 +38,11 @@ export async function middleware(request: NextRequest) {
 		}
 	}
 
-	// Если оба токена невалидны — редирект на логин
-	return NextResponse.redirect(new URL('/auth/login', request.url))
+	const response = NextResponse.rewrite(new URL('/auth/login', request.url))
+	response.cookies.delete('u')
+	response.cookies.delete('r')
+
+	return response
 }
 
 export const config = {

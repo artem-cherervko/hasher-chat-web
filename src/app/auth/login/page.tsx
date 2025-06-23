@@ -5,24 +5,29 @@ import { useRouter } from 'next/navigation'
 import Cookies from 'js-cookie'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { ArrowRight, Loader2 } from 'lucide-react'
+import { ArrowRight, EyeIcon, Loader2 } from 'lucide-react'
 import clsx from 'clsx'
 import { toast } from 'sonner'
 import { findUserByUIN } from '@/api/user/findUser'
 
 export default function LoginPage() {
+	const [passwordInputType, setPasswordInputType] = useState('password')
 	const [isLoading, setIsLoading] = useState(false)
 	const router = useRouter()
 
 	useEffect(() => {
 		const token = Cookies.get('u')
-		if (token) {
+		if (token !== undefined) {
+			setIsLoading(true)
 			router.replace('/chat/0', { scroll: false })
+		} else {
+			Cookies.remove('u')
+			Cookies.remove('r')
 		}
 	}, [])
 
 	return (
-		<div className="drop-shadow-accent flex flex-col items-center justify-center rounded-lg border-1 border-b-cyan-950 bg-[#051A27] p-4 drop-shadow-xl">
+		<div className="drop-shadow-accent flex flex-col items-center justify-center rounded-lg border-1 bg-[#051A27] p-4 drop-shadow-xl">
 			<h1 className="flex items-center justify-center text-2xl font-bold">
 				Login
 			</h1>
@@ -38,7 +43,7 @@ export default function LoginPage() {
 						if (res !== null) {
 							localStorage.setItem('uin', uin)
 							localStorage.setItem('password', password)
-							router.replace('/auth/code')
+							router.push('/auth/code')
 						} else {
 							toast.error('User not found, please check UIN')
 							setIsLoading(false)
@@ -73,7 +78,7 @@ export default function LoginPage() {
 						Password:
 					</label>
 					<input
-						type="password"
+						type={passwordInputType}
 						id="password"
 						name="password"
 						placeholder="Password..."
@@ -84,6 +89,22 @@ export default function LoginPage() {
 							}
 						)}
 						required
+					/>
+					<EyeIcon
+						onClick={() => {
+							if (passwordInputType === 'password') {
+								setPasswordInputType('text')
+							} else {
+								setPasswordInputType('password')
+							}
+						}}
+						className={clsx(
+							'absolute right-10.5 bottom-28 text-white hover:cursor-pointer',
+							{
+								'!text-[#F24822]': passwordInputType === 'text'
+							}
+						)}
+						size={20}
 					/>
 				</div>
 				<button

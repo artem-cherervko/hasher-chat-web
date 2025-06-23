@@ -44,11 +44,12 @@ export default function ChatElement(props: { uin: string; isOnline: boolean }) {
 		>
 			<div className="relative h-12 w-12 flex-shrink-0">
 				<Image
-					alt="User profile photo"
+					alt="D"
 					src={`/${data?.photo_url === 'd' ? 'd.png' : `${data?.photo_url.split('/')[1]}`}`}
 					width={48}
 					height={48}
 					className="rounded-full object-cover"
+					priority={true}
 				/>
 				<div
 					className={clsx(

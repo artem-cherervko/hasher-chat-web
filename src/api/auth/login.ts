@@ -24,12 +24,15 @@ export async function login(
 		body: JSON.stringify({ uin, password }),
 		credentials: 'include'
 	})
+	if (res.ok) {
+		const data = (await res.json()) as LoginResponse
 
-	const data = (await res.json()) as LoginResponse
+		if (data) {
+			return data
+		}
 
-	if (data) {
-		return data
+		return false
+	} else {
+		return false
 	}
-
-	return false
 }

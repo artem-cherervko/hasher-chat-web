@@ -22,9 +22,8 @@ export async function readAllMessages(props: { chat_with: string }) {
 	).then(res => res.json())
 
 	if (!res.success) {
-		throw new Error('Failed to read all messages')
+		return false
 	}
-	console.log(res)
 
 	return res.message
 }

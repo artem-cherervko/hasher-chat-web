@@ -40,7 +40,6 @@ export async function checkRefreshToken(token: string) {
 			return false
 		}
 	} catch (err) {
-		console.error('checkRefreshToken error:', err)
 		return false
 	}
 }
