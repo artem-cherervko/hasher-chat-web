@@ -104,6 +104,15 @@ export default function LandingPage() {
 					@hasher.dev
 				</a>{' '}
 				(Artem Cherevko)
+				<br />
+				<a
+					href="https://github.com/artem-cherervko/hasher-chat-web"
+					className="text-gray-400 hover:underline"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					GitHub
+				</a>
 			</footer>
 		</main>
 	)
