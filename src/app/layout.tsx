@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Fira_Mono, Inria_Serif } from 'next/font/google'
-import '../globals.css'
+import './globals.css'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Toaster } from 'sonner'
 
